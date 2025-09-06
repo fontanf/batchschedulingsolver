@@ -1,6 +1,6 @@
-# Batch scheduling solver
+# BatchSchedulingSolver
 
-A solver for batch scheduling problems
+Research code for batch scheduling problems.
 
 ## Compilation
 
@@ -8,3 +8,5 @@ A solver for batch scheduling problems
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release --parallel && cmake --install build --config Release --prefix install
 ```
+
+## Implemented algorithms

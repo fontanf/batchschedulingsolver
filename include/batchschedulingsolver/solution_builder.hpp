@@ -13,11 +13,11 @@ public:
     /** Constructor. */
     SolutionBuilder() { }
 
-    /** Read a solution from a file. */
-    void read(const std::string& certificate_path);
-
     /** Set the instance of the solution. */
     SolutionBuilder& set_instance(const Instance& instance);
+
+    /** Read a solution from a file. */
+    void read(const std::string& certificate_path);
 
     /** Add a new batch to a machine. */
     void append_batch(

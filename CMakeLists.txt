@@ -6,6 +6,10 @@ project(BatchSchedulingSolver LANGUAGES CXX)
 option(BATCHSCHEDULINGSOLVER_BUILD_MAIN "Build main" ON)
 option(BATCHSCHEDULINGSOLVER_BUILD_TEST "Build the unit tests" ON)
 
+option(BATСHSCHEDULINGSOLVER_USE_CBC "Use Cbc" OFF)
+option(BATСHSCHEDULINGSOLVER_USE_HIGHS "Use HiGHS" ON)
+option(BATСHSCHEDULINGSOLVER_USE_XPRESS "Use FICO Xpress" OFF)
+
 # Avoid FetchContent warning.
 cmake_policy(SET CMP0135 NEW)
 

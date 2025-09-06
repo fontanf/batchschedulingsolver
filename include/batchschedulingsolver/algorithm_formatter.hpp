@@ -1,6 +1,6 @@
 #pragma once
 
-#include "batchschedulingsolver/solution.hpp"
+#include "batchschedulingsolver/solution_builder.hpp"
 
 #include "optimizationtools/utils/output.hpp"
 #include "optimizationtools/utils/utils.hpp"
@@ -16,6 +16,11 @@ inline optimizationtools::ObjectiveDirection objective_direction(
 
 struct Output: optimizationtools::Output
 {
+    /** Constructor. */
+    Output(const Instance& instance):
+        solution(SolutionBuilder().set_instance(instance).build()) { }
+
+
     Time time;
 
     Solution solution;

@@ -117,7 +117,7 @@ void InstanceBuilder::set_job_family(
 
 void InstanceBuilder::set_job_release_date(
         JobId job_id,
-        FamilyId release_date)
+        Time release_date)
 {
     if (job_id < 0 || job_id >= instance_.jobs_.size()) {
         throw std::invalid_argument(
@@ -138,7 +138,7 @@ void InstanceBuilder::set_job_release_date(
 
 void InstanceBuilder::set_job_due_date(
         JobId job_id,
-        FamilyId due_date)
+        Time due_date)
 {
     if (job_id < 0 || job_id >= instance_.jobs_.size()) {
         throw std::invalid_argument(
@@ -159,7 +159,7 @@ void InstanceBuilder::set_job_due_date(
 
 void InstanceBuilder::set_job_weight(
         JobId job_id,
-        FamilyId weight)
+        Time weight)
 {
     if (job_id < 0 || job_id >= instance_.jobs_.size()) {
         throw std::invalid_argument(

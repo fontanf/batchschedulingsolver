@@ -57,5 +57,58 @@ void Solution::format(
         std::ostream& os,
         int verbosity_level) const
 {
-    // TODO
+    if (verbosity_level >= 1) {
+        os
+            << "Number of jobs:                " << this->number_of_jobs() << std::endl
+            << "Number of batches:             " << this->number_of_batches() << std::endl
+            << "# of overcapacitated batches:  " << this->number_of_overcapacitated_batches() << std::endl
+            << "# family violations:           " << this->number_of_family_violations() << std::endl
+            << "# release dates violations:    " << this->number_of_release_date_violations() << std::endl
+            << "Feasible:                      " << this->feasible() << std::endl
+            << "Makespan:                      " << this->makespan() << std::endl
+            << "Total flow time:               " << this->total_flow_time() << std::endl
+            << "Throughput:                    " << this->throughput() << std::endl
+            << "Total tardiness:               " << this->total_tardiness() << std::endl
+            << "Maximum lateness:              " << this->maximum_lateness() << std::endl
+            ;
+    }
+
+    const Instance& instance = this->instance();
+    if (verbosity_level >= 2) {
+        os << std::right << std::endl
+            << std::setw(12) << "Machine"
+            << std::setw(12) << "Batch"
+            << std::setw(12) << "Job"
+            << std::setw(12) << "Size"
+            << std::setw(12) << "Start"
+            << std::setw(12) << "Proc. time"
+            << std::endl
+            << std::setw(12) << "-------"
+            << std::setw(12) << "-----"
+            << std::setw(12) << "---"
+            << std::setw(12) << "----"
+            << std::setw(12) << "-----"
+            << std::setw(12) << "----------"
+            << std::endl;
+        for (MachineId machine_id = 0;
+                machine_id < instance.number_of_machines();
+                ++machine_id) {
+            const Solution::Machine& solution_machine = this->machine(machine_id);
+            for (BatchId batch_id = 0;
+                    batch_id < (BatchId)solution_machine.batches.size();
+                    ++batch_id) {
+                const Solution::Batch& batch = solution_machine.batches[batch_id];
+                for (JobId job_id: batch.jobs) {
+                    os
+                        << std::setw(12) << machine_id
+                        << std::setw(12) << batch_id
+                        << std::setw(12) << job_id
+                        << std::setw(12) << batch.size
+                        << std::setw(12) << batch.start
+                        << std::setw(12) << batch.processing_time
+                        << std::endl;
+                }
+            }
+        }
+    }
 }

@@ -103,6 +103,9 @@ public:
     /** Get the total (weighted) flow time of the solution. */
     Time total_flow_time() const { return total_flow_time_; }
 
+    /** Get the throughput of the solution. */
+    Time throughput() const { return throughput_; }
+
     /** Get the total_tardiness of the solution. */
     Time total_tardiness() const { return total_tardiness_; }
 
@@ -133,6 +136,13 @@ public:
             int verbosity_level = 1) const;
 
 private:
+
+    /*
+     * Private methods
+     */
+
+    /** Create an instance manually. */
+    Solution() { }
 
     /*
      * Private attributes
@@ -170,6 +180,9 @@ private:
 
     /** Total (weighted) flow time. */
     Time total_flow_time_ = 0;
+
+    /** Troughput. */
+    Time throughput_ = 0;
 
     /** Total (weighted) tardiness. */
     Time total_tardiness_ = 0;

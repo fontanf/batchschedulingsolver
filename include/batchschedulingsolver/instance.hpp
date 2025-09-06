@@ -20,9 +20,18 @@ enum class Objective
 {
     Makespan,
     TotalFlowTime,
+    Throughput,
     TotalTardiness,
     MaximumLateness,
 };
+
+std::istream& operator>>(
+        std::istream& in,
+        Objective& objective);
+
+std::ostream& operator<<(
+        std::ostream& os,
+        Objective objective);
 
 /**
  * Structure for a machine.

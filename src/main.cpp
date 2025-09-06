@@ -1,4 +1,4 @@
-#include "batchschedulingsolver/optimize.hpp"
+#include "batchschedulingsolver/algorithm_formatter.hpp"
 #include "batchschedulingsolver/instance_builder.hpp"
 
 #include <boost/program_options.hpp>
@@ -55,6 +55,29 @@ void read_args(
     }
 }
 
+Output run(
+        const Instance& instance,
+        const po::variables_map& vm)
+{
+    Seed seed = 0;
+    if (vm.count("seed"))
+        seed = vm["seed"].as<Seed>();
+    std::mt19937_64 generator(seed);
+    //Solution solution = (vm.count("initial-solution"))?
+    //    Solution(instance, vm["initial-solution"].as<std::string>()):
+    //    Solution(instance);
+
+    // Run algorithm.
+    std::string algorithm = vm["algorithm"].as<std::string>();
+
+    //} else {
+    //    throw std::invalid_argument(
+    //            "Unknown algorithm \"" + algorithm + "\".");
+    //}
+
+    return Output(instance);
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -74,6 +97,8 @@ int main(int argc, char *argv[])
         ("only-write-at-the-end,e", "Only write output and certificate files at the end")
         ("verbosity-level,v", po::value<int>(), "Verbosity level")
         ("log-to-stderr,w", "Write log in stderr")
+
+        //("solver,", po::value<mathoptsolverscmake::SolverName>(), "set solver")
         ;
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -98,12 +123,8 @@ int main(int argc, char *argv[])
             input_format);
     Instance instance = instance_builder.build();
 
-    // Read optimize parameters.
-    OptimizeParameters parameters;
-    read_args(parameters, vm);
-
-    // Solve.
-    const Output output = optimize(instance, parameters);
+    // Run.
+    Output output = run(instance, vm);
 
     // Write output.
     if (vm.count("certificate")) {
