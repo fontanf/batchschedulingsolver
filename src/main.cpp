@@ -89,6 +89,8 @@ int main(int argc, char *argv[])
         ("input,i", po::value<std::string>()->required(), "Input path")
         ("format,f", po::value<std::string>(), "Input format")
 
+        ("algorithm,a", po::value<std::string>()->required(), "set algorithm")
+
         ("output,o", po::value<std::string>(), "Output path")
         ("certificate,c", po::value<std::string>(), "Certificate path")
         ("log,l", po::value<std::string>(), "Log path")
