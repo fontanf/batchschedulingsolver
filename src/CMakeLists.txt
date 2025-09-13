@@ -11,7 +11,7 @@ target_include_directories(BatchSchedulingSolver_batchschedulingsolver PRIVATE
     ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(BatchSchedulingSolver_batchschedulingsolver PUBLIC
     OptimizationTools::utils)
-add_library(BatchSchedulingSolver::box ALIAS BatchSchedulingSolver_batchschedulingsolver)
+add_library(BatchSchedulingSolver::batchschedulingsolver ALIAS BatchSchedulingSolver_batchschedulingsolver)
 
 add_subdirectory(algorithms)
 
@@ -23,6 +23,6 @@ if(BATCHSCHEDULINGSOLVER_BUILD_MAIN)
         BatchSchedulingSolver_batchschedulingsolver
         Boost::program_options
         Boost::filesystem)
-    set_target_properties(BatchSchedulingSolver_main PROPERTIES OUTPUT_NAME "packingsolver_box")
+    set_target_properties(BatchSchedulingSolver_main PROPERTIES OUTPUT_NAME "batchschedulingsolver")
     install(TARGETS BatchSchedulingSolver_main)
 endif()
