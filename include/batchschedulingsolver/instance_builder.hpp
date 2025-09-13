@@ -80,6 +80,12 @@ private:
      * Private methods
      */
 
+    /** Read an instance from a file in 'alfieri2021' format. */
+    void read_alfieri2021(std::ifstream& file);
+
+    /** Read an instance from a file in 'queiroga2020' format. */
+    void read_queiroga2020(std::ifstream& file);
+
     /*
      * Private attributes
      */

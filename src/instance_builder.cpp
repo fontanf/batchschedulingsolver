@@ -182,7 +182,70 @@ void InstanceBuilder::read(
         const std::string& instance_path,
         const std::string& format)
 {
-    // TODO
+    std::ifstream file(instance_path);
+    if (!file.good()) {
+        throw std::runtime_error(
+                "Unable to open file \"" + instance_path + "\".");
+    }
+    if (format == "" || format == "alfieri2021") {
+        read_alfieri2021(file);
+    } else if (format == "queiroga2020") {
+        read_queiroga2020(file);
+    } else {
+        throw std::invalid_argument(
+                "Unknown instance format \"" + format + "\".");
+    }
+    file.close();
+}
+
+void InstanceBuilder::read_alfieri2021(std::ifstream& file)
+{
+    JobId number_of_jobs = -1;
+    Size capacity = -1;
+    file >> number_of_jobs >> capacity;
+    set_number_of_machines(1);
+    MachineId machine_id = 0;
+    set_machine_capacity(machine_id, capacity);
+
+    Time processing_time;
+    Size size;
+    for (JobId job_id = 0; job_id < number_of_jobs; ++job_id) {
+        file >> processing_time >> size;
+        add_job();
+        set_job_processing_time(job_id, machine_id, processing_time);
+        set_job_size(job_id, size);
+    }
+    set_objective(Objective::TotalFlowTime);
+}
+
+void InstanceBuilder::read_queiroga2020(std::ifstream& file)
+{
+    JobId number_of_jobs = -1;
+    Size capacity = -1;
+    file >> number_of_jobs >> capacity;
+    set_number_of_machines(1);
+    MachineId machine_id = 0;
+    set_machine_capacity(machine_id, capacity);
+
+    Time processing_time;
+    Time release_date;
+    Time due_date;
+    Size size;
+    Time weight;
+    for (JobId job_id = 0; job_id < number_of_jobs; ++job_id) {
+        file
+            >> processing_time
+            >> due_date
+            >> size
+            >> weight
+            >> release_date;
+        add_job();
+        set_job_processing_time(job_id, machine_id, processing_time);
+        set_job_size(job_id, size);
+        set_job_release_date(job_id, release_date);
+        set_job_weight(job_id, weight);
+    }
+    set_objective(Objective::TotalTardiness);
 }
 
 Instance InstanceBuilder::build()
