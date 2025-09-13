@@ -6,6 +6,8 @@ SolutionBuilder& SolutionBuilder::set_instance(
         const Instance& instance)
 {
     solution_.instance_ = &instance;
+    solution_.machines_ = std::vector<Solution::Machine>(instance.number_of_machines());
+    solution_.jobs_ = std::vector<Solution::Job>(instance.number_of_jobs());
     return *this;
 }
 
