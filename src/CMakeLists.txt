@@ -21,6 +21,7 @@ if(BATCHSCHEDULINGSOLVER_BUILD_MAIN)
         main.cpp)
     target_link_libraries(BatchSchedulingSolver_main PUBLIC
         BatchSchedulingSolver_batchschedulingsolver
+        BatchSchedulingSolver_greedy_longest_processing_time
         Boost::program_options
         Boost::filesystem)
     set_target_properties(BatchSchedulingSolver_main PROPERTIES OUTPUT_NAME "batchschedulingsolver")
