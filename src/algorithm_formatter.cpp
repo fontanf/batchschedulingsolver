@@ -32,7 +32,7 @@ void AlgorithmFormatter::print_header()
 {
     if (parameters_.verbosity_level == 0)
         return;
-    *os_ << std::endl;
+    *os_ << std::right << std::endl;
     switch (instance_.objective()) {
     case Objective::Makespan: {
         *os_
@@ -54,7 +54,7 @@ void AlgorithmFormatter::print_header()
                 << std::endl
                 << std::setw(12) << "----"
                 << std::setw(12) << "---"
-                << std::setw(12) << "---------"
+                << std::setw(12) << "--------"
                 << std::setw(32) << "-------"
                 << std::endl;
         break;
@@ -67,7 +67,20 @@ void AlgorithmFormatter::print_header()
                 << std::endl
                 << std::setw(12) << "----"
                 << std::setw(12) << "--"
-                << std::setw(12) << "---------"
+                << std::setw(12) << "--------"
+                << std::setw(32) << "-------"
+                << std::endl;
+        break;
+    } case Objective::Throughput: {
+        *os_
+                << std::setw(12) << "Time"
+                << std::setw(12) << "Throughput"
+                << std::setw(12) << "Makespan"
+                << std::setw(32) << "Comment"
+                << std::endl
+                << std::setw(12) << "----"
+                << std::setw(12) << "----------"
+                << std::setw(12) << "--------"
                 << std::setw(32) << "-------"
                 << std::endl;
         break;
@@ -80,7 +93,7 @@ void AlgorithmFormatter::print_header()
                 << std::endl
                 << std::setw(12) << "----"
                 << std::setw(12) << "----"
-                << std::setw(12) << "---------"
+                << std::setw(12) << "--------"
                 << std::setw(32) << "-------"
                 << std::endl;
         break;
@@ -107,6 +120,14 @@ void AlgorithmFormatter::print(
         *os_
                 << std::setw(12) << std::fixed << std::setprecision(3) << output_.time << std::defaultfloat << std::setprecision(precision)
                 << std::setw(12) << output_.solution.total_flow_time()
+                << std::setw(12) << output_.solution.makespan()
+                << std::setw(32) << s
+                << std::endl;
+        break;
+    } case Objective::Throughput: {
+        *os_
+                << std::setw(12) << std::fixed << std::setprecision(3) << output_.time << std::defaultfloat << std::setprecision(precision)
+                << std::setw(12) << output_.solution.throughput()
                 << std::setw(12) << output_.solution.makespan()
                 << std::setw(32) << s
                 << std::endl;
