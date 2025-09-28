@@ -48,7 +48,7 @@ Solution SolutionBuilder::build()
         for (BatchId batch_id = 0;
                 batch_id < (BatchId)solution_machine.batches.size();
                 ++batch_id) {
-            Solution::Batch batch = solution_machine.batches[batch_id];
+            Solution::Batch& batch = solution_machine.batches[batch_id];
             // Update number of overlapping batches.
             if (batch_id > 0 && batch.start
                     < solution_machine.batches[batch_id - 1].start
