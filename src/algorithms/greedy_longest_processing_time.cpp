@@ -49,6 +49,7 @@ Output batchschedulingsolver::greedy_longest_processing_time(
         } else {
             // create new batch
             start_time += max_time_current_batch;
+			max_time_current_batch = job.processing_times[machine_id];
             solution_builder.append_batch(machine_id, start_time);
             solution_builder.add_job_to_last_batch(machine_id, job_id);
             current_batch_size = job.size;
@@ -58,7 +59,6 @@ Output batchschedulingsolver::greedy_longest_processing_time(
 
     Solution solution = solution_builder.build();
     algorithm_formatter.update_solution(solution, "greedy");
-
     algorithm_formatter.end();
     return output;
 }
