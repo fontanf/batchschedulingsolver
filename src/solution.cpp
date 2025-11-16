@@ -34,7 +34,71 @@ void Solution::write(
         const std::string& certificate_path,
         const std::string& format) const
 {
-    // TODO
+    if (certificate_path.empty())
+        return;
+    std::ofstream file{ certificate_path };
+    if (!file.good()) {
+        throw std::runtime_error(
+            "batchchedulingsolver::Solution::write: "
+            "Unable to open file \"" + certificate_path + "\".");
+    }
+    nlohmann::json json;
+    nlohmann::json machines_json = nlohmann::json::array();
+
+    if (format == "json") {
+        std::cout << "Format JSON reconnu";
+        const Instance& instance = this->instance();
+        for (MachineId machine_id = 0;
+            machine_id < instance.number_of_machines();
+            ++machine_id) {
+
+            const Machine& solution_machine = this->machine(machine_id);
+            nlohmann::json batches_json = nlohmann::json::array();
+
+            for (BatchId batch_id = 0;
+                batch_id < solution_machine.batches.size();
+                ++batch_id) {
+                const Batch& machine_batch = solution_machine.batches[batch_id];
+                nlohmann::json jobs_array = nlohmann::json::array();
+
+                for (JobId job_pos = 0;
+                    job_pos < (JobId)machine_batch.jobs.size();
+                    ++job_pos) {
+                    JobId job_id = machine_batch.jobs[job_pos];
+                    const batchschedulingsolver::Job& job = instance.job(job_id);
+
+                    jobs_array.push_back({
+                        {"Job_ID", job_id},
+                        {"Job_Size", job.size},
+                        {"Job_FamilyID", job.family_id},
+                        {"Job_Due_Date", job.due_date},
+                        {"Job_Release_Date", job.release_date},
+                        {"Job_Weight", job.weight},
+                        {"Job_Processing_Time", job.processing_times[machine_id]}
+                        });
+                }
+                batches_json.push_back({
+                    {"Jobs", jobs_array},
+                    {"Batch_Start", machine_batch.start},
+                    {"Batch_Size", machine_batch.size},
+                    {"Batch_Processing_Time", machine_batch.processing_time}
+                    });
+            }
+
+            machines_json.push_back({
+                {"Machine_ID", +machine_id },
+                {"Makespan", solution_machine.makespan},
+                {"Machine_Capacity", this->instance().machine(machine_id).capacity},
+                {"Total_Flow_Time", solution_machine.total_flow_time},
+                {"Total_Tardiness", solution_machine.total_tardiness},
+                {"Maximum_Lateness", solution_machine.maximum_lateness},
+                {"Batches",batches_json}
+                });
+
+            json["Machine_" + std::to_string(machine_id)] = machines_json;
+        }
+        file << json.dump(4);
+    }
 }
 
 nlohmann::json Solution::to_json() const
