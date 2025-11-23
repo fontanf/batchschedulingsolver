@@ -141,14 +141,12 @@ void read(const std::string& certificate_path)
 
     nlohmann::json j;
     file >> j;
-
+    const Instance& instance = solution_.instance();
     // loop (Machine_0, Machine_1, ...)
     for (auto& [machineKey, machineArray] : j.items()) {
-        const Instance& instance = solution_.instance();
-
 		MachineID machine_id =  std::stoi(machineKey.substr(8));
         Solution::Machine& solution_machine = this->solution_.machines_[machine_id];
-        // Chaque machine est un tableau ? machineArray[0]
+        // Each machine is represented by machineArray[0]
         const auto& machine = machineArray[0];
 
 
@@ -160,8 +158,6 @@ void read(const std::string& certificate_path)
         std::cout << "\n============================\n";
         std::cout << "Machine: " << machineKey << "\n";
         std::cout << "============================\n";
-
-        
 
         std::cout << "ID: " << machine["Machine_ID"] << "\n";
         std::cout << "Capacity: " << machine["Machine_Capacity"] << "\n";
