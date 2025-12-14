@@ -150,8 +150,6 @@ void SolutionBuilder::read(const std::string& certificate_path) {
         const auto& machine = machineArray[0];
         // loop batches
         for (const auto& batch : machine["Batches"]) {
-
-
             this->append_batch(
                 machine_id,
                 batch["Batch_Start"]
@@ -159,9 +157,6 @@ void SolutionBuilder::read(const std::string& certificate_path) {
             // loop jobs
             std::cout << "Jobs:\n";
             for (const auto& job : batch["Jobs"]) {
-                std::cout << "   Job " << job["Job_ID"]
-                    << " (size=" << job["Job_Size"]
-                    << ", p=" << job["Job_Processing_Time"] << ")\n";
                 this->add_job_to_last_batch(
                     machine_id,
                     job["Job_ID"]);
