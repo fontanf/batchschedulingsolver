@@ -130,8 +130,7 @@ Solution SolutionBuilder::build()
     return std::move(solution_);
 }
 
-void read(const std::string& certificate_path)
-{
+void SolutionBuilder::read(const std::string& certificate_path) {
     std::ifstream file(certificate_path);
     if (!file.good()) {
         throw std::runtime_error(
@@ -141,39 +140,22 @@ void read(const std::string& certificate_path)
 
     nlohmann::json j;
     file >> j;
-    const Instance& instance = solution_.instance();
+    const Instance& instance = this->solution_.instance();
     // loop (Machine_0, Machine_1, ...)
-    for (auto& [machineKey, machineArray] : j.items()) {
-		MachineID machine_id =  std::stoi(machineKey.substr(8));
-        Solution::Machine& solution_machine = this->solution_.machines_[machine_id];
+    for (auto& item : j.items()) {
+        const auto& machineKey = item.key();
+        const auto& machineArray = item.value();
+        MachineId machine_id = std::stoll(machineKey.substr(8));
         // Each machine is represented by machineArray[0]
         const auto& machine = machineArray[0];
-
-
-        solution_machine.maximum_lateness_ = machine["Maximum_Lateness"];
-        solution_machine.total_tardiness_ = machine["Total_Tardiness"];
-        solution_machine.total_flow_time_ = machine["Total_Flow_Time"];
-        solution_machine.makespan_ = machine["Makespan"];
-        solution_machine.total_flow_time_ = machine["Total_Flow_Time"];
-        std::cout << "\n============================\n";
-        std::cout << "Machine: " << machineKey << "\n";
-        std::cout << "============================\n";
-
-        std::cout << "ID: " << machine["Machine_ID"] << "\n";
-        std::cout << "Capacity: " << machine["Machine_Capacity"] << "\n";
-        std::cout << "Makespan: " << machine["Makespan"] << "\n";
-
         // loop batches
-        for (const Batch & batch : machine["Batches"]) {
-            std::cout << "\n--- Batch ---\n";
-            std::cout << "Start: " << batch["Batch_Start"] << "\n";
-            std::cout << "Size: " << batch["Batch_Size"] << "\n";
-            std::cout << "Processing Time: " << batch["Batch_Processing_Time"] << "\n";
+        for (const auto& batch : machine["Batches"]) {
+
 
             this->append_batch(
                 machine_id,
                 batch["Batch_Start"]
-			);
+            );
             // loop jobs
             std::cout << "Jobs:\n";
             for (const auto& job : batch["Jobs"]) {
@@ -186,6 +168,4 @@ void read(const std::string& certificate_path)
             }
         }
     }
-    
-
 }
