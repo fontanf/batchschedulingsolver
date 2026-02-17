@@ -5,13 +5,8 @@
 namespace batchschedulingsolver
 {
 
-
-  
-
-    Output greedy_longest_processing_time(
+Output greedy_longest_processing_time(
         const Instance& instance,
-        const Parameters& parameters = {}
-    );
+        const Parameters& parameters = {});
 
-    
 }

@@ -80,7 +80,6 @@ Output run(
         Parameters parameters;
         read_args(parameters, vm);
         return greedy_longest_processing_time(instance, parameters);
-
     }
     return Output(instance);
 }
