@@ -125,7 +125,7 @@ public:
     /** Write the solution to a file. */
     void write(
             const std::string& certificate_path,
-            const std::string& format) const;
+            const std::string& format = "json") const;
 
     /** Export solution characteristics to a JSON structure. */
     nlohmann::json to_json() const;

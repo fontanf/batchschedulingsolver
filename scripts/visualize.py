@@ -99,7 +99,7 @@ def plot_schedule_with_jobs(data, save_path=None):
                 ax.text(
                     x=start + job_duration / 2,
                     y=job_y,
-                    s=f"({job_size}, {job_duration})",
+                    s=f"({job_id}, {job_size}, {job_duration})",
                     va='center',
                     ha='center',
                     fontsize=fontsize,
@@ -112,7 +112,6 @@ def plot_schedule_with_jobs(data, save_path=None):
     # Y-axis setup
     ax.set_yticks(yticks)
     ax.set_yticklabels(yticklabels)
-    ax.invert_yaxis()
 
     # X-axis setup
     ax.set_xlabel("Time")
@@ -122,8 +121,8 @@ def plot_schedule_with_jobs(data, save_path=None):
     # Legend
     handles = [
         Patch(facecolor=batch_color, edgecolor='black', alpha=batch_alpha, label='Batch (machine capacity)'),
-        Patch(facecolor=batch_size_text_color, label='Batch (size,duration) - text'),
-        Patch(facecolor=job_size_text_color, label='Job (size,duration) - text')
+        Patch(facecolor=batch_size_text_color, label='Batch (size, duration) - text'),
+        Patch(facecolor=job_size_text_color, label='Job (id, size, duration) - text')
     ]
 
     sorted_job_ids = sorted(job_colors.keys())

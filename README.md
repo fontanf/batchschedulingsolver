@@ -21,4 +21,17 @@ Download data files:
 python scripts/download_data.py
 ```
 
+Run
+```shell
+./install/bin/batchschedulingsolver  --verbosity-level 1  --input ./data/alfieri2021/inst_10_1_1.dat --format alfieri2021  --algorithm greedy-longest-processing-time  --certificate solution.json
+```
+
+Visualize solution:
+```shell
+python scripts/visualize.py solution.json
+```
+
 ## Implemented algorithms
+
+$1 \mid \text{p-batch}, \text{size}_j \mid C_{\max}$
+* Greedy, longest processing-time `greedy-longest-processing-time`

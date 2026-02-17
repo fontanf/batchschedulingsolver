@@ -35,7 +35,7 @@ void read_args(
         std::string json_output_path = "";
         if (vm.count("output"))
             json_output_path = vm["output"].as<std::string>();
-        std::string certificate_format;
+        std::string certificate_format = "json";
         if (vm.count("certificate-format"))
             certificate_format = vm["certificate-format"].as<std::string>();
 
@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
 
     // Write output.
     if (vm.count("certificate")) {
-        std::string certificate_format;
+        std::string certificate_format = "json";
         if (vm.count("certificate-format"))
             certificate_format = vm["certificate-format"].as<std::string>();
         output.solution.write(
