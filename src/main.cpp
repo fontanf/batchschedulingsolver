@@ -1,5 +1,6 @@
 #include "batchschedulingsolver/algorithm_formatter.hpp"
 #include "batchschedulingsolver/instance_builder.hpp"
+#include "batchschedulingsolver/algorithms/greedy_longest_processing_time.hpp"
 
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
@@ -75,6 +76,11 @@ Output run(
     //            "Unknown algorithm \"" + algorithm + "\".");
     //}
 
+    if (algorithm == "greedy-longest-processing-time") {
+        Parameters parameters;
+        read_args(parameters, vm);
+        return greedy_longest_processing_time(instance, parameters);
+    }
     return Output(instance);
 }
 

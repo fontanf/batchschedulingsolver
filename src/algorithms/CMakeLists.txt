@@ -1,0 +1,8 @@
+add_library(BatchSchedulingSolver_greedy_longest_processing_time)
+target_sources(BatchSchedulingSolver_greedy_longest_processing_time PRIVATE
+    greedy_longest_processing_time.cpp)
+target_include_directories(BatchSchedulingSolver_greedy_longest_processing_time PUBLIC
+    ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(BatchSchedulingSolver_greedy_longest_processing_time PUBLIC
+    BatchSchedulingSolver_batchschedulingsolver)
+add_library(BatchSchedulingSolver::greedy_longest_processing_time ALIAS BatchSchedulingSolver_greedy_longest_processing_time)
