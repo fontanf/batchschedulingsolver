@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
 import random
 import json
 import argparse
@@ -7,7 +6,7 @@ from matplotlib.patches import Patch
 import plotly.express as px
 
 def plot_schedule_with_jobs(data, save_path=None):
-    fig, ax = plt.subplots(figsize=(14, 6))
+    _, ax = plt.subplots(figsize=(14, 6))
 
     yticks = []
     yticklabels = []
@@ -26,95 +25,89 @@ def plot_schedule_with_jobs(data, save_path=None):
     random.shuffle(color_list)
     job_colors = {}
 
-    for machine_key, machine_list in data.items():
-        for machine in machine_list:
-            machine_id = machine["Machine_ID"]
-            batches = machine.get("Batches", [])
+    for machine_id, machine in enumerate(data["machines"]):
+        # Get machine capacity 
+        machine_capacity = machine["capacity"]
+        total_batch_height = machine_capacity
 
-            # Get machine capacity 
-            machine_capacity = machine["Machine_Capacity"]
-            total_batch_height = machine_capacity
+        machine_y_base = current_y
+        machine_center_y = machine_y_base + total_batch_height / 2
+        yticks.append(machine_center_y)
+        yticklabels.append(machine_id)
+        machine_positions[machine_id] = machine_y_base
+        current_y += total_batch_height + 2  # spacing between machines
 
-            machine_y_base = current_y
-            machine_center_y = machine_y_base + total_batch_height / 2
-            yticks.append(machine_center_y)
-            yticklabels.append(machine_key)
-            machine_positions[machine_id] = machine_y_base
-            current_y += total_batch_height + 2  # spacing between machines
+        for batch in machine["batches"]:
+            start = batch["start"]
+            batch_duration = batch["processing_time"]
+            batch_size = batch.get("size", 1)
 
-            for batch_index, batch in enumerate(batches):
-                start = batch["Batch_Start"]
-                batch_duration = batch["Batch_Processing_Time"]
-                batch_size = batch.get("Batch_Size", 1)
-                jobs = batch.get("Jobs", [])
+            batch_y = machine_y_base + machine_capacity / 2
 
-                batch_y = machine_y_base + machine_capacity / 2
+            # Draw batch background with fixed height = machine capacity
+            ax.barh(
+                y=batch_y,
+                width=batch_duration,
+                left=start,
+                height=machine_capacity,
+                align='center',
+                alpha=batch_alpha,
+                edgecolor='black',
+                linewidth=1.5,
+                color=batch_color
+            )
 
-                # Draw batch background with fixed height = machine capacity
+            # Show batch size (top-right, dynamic offset)
+            ax.text(
+                x=start + batch_duration/2,
+                y=batch_y + machine_capacity / 2 + 0.2,
+                s=f"({batch_size}, {batch_duration})",
+                va='top',
+                ha='center',
+                fontsize=8,
+                fontweight='bold',
+                color=batch_size_text_color
+            )
+
+            # Stack jobs inside the batch, aligned at the bottom of batch block
+            job_y_offset = batch_y - machine_capacity / 2  # bottom of batch block
+            for job in batch["jobs"]:
+                job_id = job["job_id"]
+                job_duration = job["processing_time"]
+                job_size = job["size"]
+
+                if job_id not in job_colors:
+                    job_colors[job_id] = color_list[len(job_colors) % len(color_list)]
+                job_color = job_colors[job_id]
+
+                job_y = job_y_offset + job_size / 2
+                rotation = 90 if job_duration < 3 else 0
+                fontsize = min(7, max(4,job_duration))
+                # Draw job bar
                 ax.barh(
-                    y=batch_y,
-                    width=batch_duration,
+                    y=job_y,
+                    width=job_duration,
                     left=start,
-                    height=machine_capacity,
+                    height=job_size,
                     align='center',
-                    alpha=batch_alpha,
+                    alpha=0.9,
                     edgecolor='black',
-                    linewidth=1.5,
-                    color=batch_color
+                    color=job_color
                 )
 
-                # Show batch size (top-right, dynamic offset)
+                # Show job size (in red)
                 ax.text(
-                    x=start + batch_duration/2,
-                    y=batch_y + machine_capacity / 2 + 0.2,
-                    s=f"({batch_size}, {batch_duration})",
-                    va='top',
+                    x=start + job_duration / 2,
+                    y=job_y,
+                    s=f"({job_size}, {job_duration})",
+                    va='center',
                     ha='center',
-                    fontsize=8,
-                    fontweight='bold',
-                    color=batch_size_text_color
+                    fontsize=fontsize,
+                    rotation=rotation,
+                    color=job_size_text_color
                 )
 
-                # Stack jobs inside the batch, aligned at the bottom of batch block
-                job_y_offset = batch_y - machine_capacity / 2  # bottom of batch block
-
-                for j, job in enumerate(jobs):
-                    job_id = job.get("Job_ID", f"J{machine_id}-{batch_index}-{j}")
-                    job_duration = job["Job_Processing_Time"]
-                    job_size = job.get("Job_Size", 1)
-
-                    if job_id not in job_colors:
-                        job_colors[job_id] = color_list[len(job_colors) % len(color_list)]
-                    job_color = job_colors[job_id]
-
-                    job_y = job_y_offset + job_size / 2
-                    rotation = 90 if job_duration < 3 else 0
-                    fontsize = min(7, max(4,job_duration))
-                    # Draw job bar
-                    ax.barh(
-                        y=job_y,
-                        width=job_duration,
-                        left=start,
-                        height=job_size,
-                        align='center',
-                        alpha=0.9,
-                        edgecolor='black',
-                        color=job_color
-                    )
-
-                    # Show job size (in red)
-                    ax.text(
-                        x=start + job_duration / 2,
-                        y=job_y,
-                        s=f"({job_size}, {job_duration})",
-                        va='center',
-                        ha='center',
-                        fontsize=fontsize,
-                        rotation=rotation,
-                        color=job_size_text_color
-                    )
-
-                    job_y_offset += job_size  # move up for next job
+                job_y_offset += job_size  # move up for next job
 
     # Y-axis setup
     ax.set_yticks(yticks)
@@ -156,5 +149,4 @@ if __name__ == "__main__":
 
     with open(args.json_file, 'r', encoding='utf-8') as f:
         data = json.load(f)
-
-    plot_schedule_with_jobs(data, save_path=args.save)
+        plot_schedule_with_jobs(data, save_path=args.save)

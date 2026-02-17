@@ -21,6 +21,8 @@ bool Solution::strictly_better(const Solution& solution) const
         return this->makespan() < solution.makespan();
     } case Objective::TotalFlowTime: {
         return this->total_flow_time() < solution.total_flow_time();
+    } case Objective::Throughput: {
+        return this->throughput() > solution.throughput();
     } case Objective::TotalTardiness: {
         return this->total_tardiness() < solution.total_tardiness();
     } case Objective::MaximumLateness: {
@@ -42,60 +44,44 @@ void Solution::write(
             "batchchedulingsolver::Solution::write: "
             "Unable to open file \"" + certificate_path + "\".");
     }
-    nlohmann::json json;
-    nlohmann::json machines_json = nlohmann::json::array();
 
     if (format == "json") {
-        std::cout << "Format JSON reconnu";
-        const Instance& instance = this->instance();
+        nlohmann::json json;
         for (MachineId machine_id = 0;
-            machine_id < instance.number_of_machines();
-            ++machine_id) {
-
+                machine_id < this->instance().number_of_machines();
+                ++machine_id) {
             const Machine& solution_machine = this->machine(machine_id);
-            nlohmann::json batches_json = nlohmann::json::array();
+            const batchschedulingsolver::Machine& machine = this->instance().machine(machine_id);
 
             for (BatchId batch_id = 0;
-                batch_id < solution_machine.batches.size();
-                ++batch_id) {
+                    batch_id < (BatchId)solution_machine.batches.size();
+                    ++batch_id) {
                 const Batch& machine_batch = solution_machine.batches[batch_id];
-                nlohmann::json jobs_array = nlohmann::json::array();
 
                 for (JobId job_pos = 0;
-                    job_pos < (JobId)machine_batch.jobs.size();
-                    ++job_pos) {
+                        job_pos < (JobId)machine_batch.jobs.size();
+                        ++job_pos) {
                     JobId job_id = machine_batch.jobs[job_pos];
-                    const batchschedulingsolver::Job& job = instance.job(job_id);
+                    const batchschedulingsolver::Job& job = this->instance().job(job_id);
 
-                    jobs_array.push_back({
-                        {"Job_ID", job_id},
-                        {"Job_Size", job.size},
-                        {"Job_FamilyID", job.family_id},
-                        {"Job_Due_Date", job.due_date},
-                        {"Job_Release_Date", job.release_date},
-                        {"Job_Weight", job.weight},
-                        {"Job_Processing_Time", job.processing_times[machine_id]}
-                        });
+                    json["machines"][machine_id]["batches"][batch_id]["jobs"][job_pos]["job_id"] = job_id;
+                    json["machines"][machine_id]["batches"][batch_id]["jobs"][job_pos]["size"] = job.size;
+                    json["machines"][machine_id]["batches"][batch_id]["jobs"][job_pos]["family_id"] = job.family_id;
+                    json["machines"][machine_id]["batches"][batch_id]["jobs"][job_pos]["due_date"] = job.due_date;
+                    json["machines"][machine_id]["batches"][batch_id]["jobs"][job_pos]["release_date"] = job.release_date;
+                    json["machines"][machine_id]["batches"][batch_id]["jobs"][job_pos]["weight"] = job.weight;
+                    json["machines"][machine_id]["batches"][batch_id]["jobs"][job_pos]["processing_time"] = job.processing_times[machine_id];
                 }
-                batches_json.push_back({
-                    {"Jobs", jobs_array},
-                    {"Batch_Start", machine_batch.start},
-                    {"Batch_Size", machine_batch.size},
-                    {"Batch_Processing_Time", machine_batch.processing_time}
-                    });
+                json["machines"][machine_id]["batches"][batch_id]["start"] = machine_batch.start;
+                json["machines"][machine_id]["batches"][batch_id]["size"] = machine_batch.size;
+                json["machines"][machine_id]["batches"][batch_id]["processing_time"] = machine_batch.processing_time;
             }
 
-            machines_json.push_back({
-                {"Machine_ID", +machine_id },
-                {"Makespan", solution_machine.makespan},
-                {"Machine_Capacity", this->instance().machine(machine_id).capacity},
-                {"Total_Flow_Time", solution_machine.total_flow_time},
-                {"Total_Tardiness", solution_machine.total_tardiness},
-                {"Maximum_Lateness", solution_machine.maximum_lateness},
-                {"Batches",batches_json}
-                });
-
-            json["Machine_" + std::to_string(machine_id)] = machines_json;
+            json["machines"][machine_id]["capacity"] = machine.capacity;
+            json["machines"][machine_id]["makespan"] = solution_machine.makespan;
+            json["machines"][machine_id]["total_flow_time"] = solution_machine.total_flow_time;
+            json["machines"][machine_id]["total_tardiness"] = solution_machine.total_tardiness;
+            json["machines"][machine_id]["maximum_lateness"] = solution_machine.maximum_lateness;
         }
         file << json.dump(4);
     }
