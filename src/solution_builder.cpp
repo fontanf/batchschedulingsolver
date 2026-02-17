@@ -129,3 +129,33 @@ Solution SolutionBuilder::build()
     }
     return std::move(solution_);
 }
+
+void SolutionBuilder::read(
+        const std::string& certificate_path)
+{
+    std::ifstream file(certificate_path);
+    if (!file.good()) {
+        throw std::runtime_error(
+            "batchschedulingsolver::SolutionBuilder::read: "
+            "unable to open file \"" + certificate_path + "\".");
+    }
+
+    nlohmann::json j;
+    file >> j;
+    const Instance& instance = this->solution_.instance();
+
+    for (MachineId machine_id = 0;
+            machine_id < instance.number_of_machines();
+            ++machine_id) {
+        for (const auto& json_batch: j["machines"][machine_id]["batches"]) {
+            this->append_batch(
+                    machine_id,
+                    json_batch["start"]);
+            for (const auto& json_job: json_batch["jobs"]) {
+                this->add_job_to_last_batch(
+                        machine_id,
+                        json_job["job_id"]);
+            }
+        }
+    }
+}
