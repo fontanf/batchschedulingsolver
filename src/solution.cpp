@@ -41,8 +41,8 @@ void Solution::write(
     std::ofstream file{ certificate_path };
     if (!file.good()) {
         throw std::runtime_error(
-            "batchchedulingsolver::Solution::write: "
-            "Unable to open file \"" + certificate_path + "\".");
+                FUNC_SIGNATURE + ": "
+                "unable to open file \"" + certificate_path + "\".");
     }
 
     if (format == "json") {

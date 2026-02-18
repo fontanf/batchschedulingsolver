@@ -6,7 +6,7 @@ void InstanceBuilder::set_number_of_machines(MachineId number_of_machines)
 {
     if (number_of_machines <= 0) {
         throw std::invalid_argument(
-                "batchschedulingsolver::InstanceBuilder::set_number_of_machines: "
+                FUNC_SIGNATURE + ": "
                 "'number_of_machines' must be > 0; "
                 "number_of_machines: " + std::to_string(number_of_machines) + ".");
     }
@@ -20,14 +20,14 @@ void InstanceBuilder::set_machine_capacity(
 {
     if (machine_id < 0 || machine_id >= instance_.machines_.size()) {
         throw std::invalid_argument(
-                "batchschedulingsolver::InstanceBuilder::set_machine_capacity: "
+                FUNC_SIGNATURE + ": "
                 "invalid 'machine_id'; "
                 "machine_id: " + std::to_string(machine_id) + "; "
                 "instance_.machines_.size(): " + std::to_string(instance_.machines_.size()) + ".");
     }
     if (capacity <= 0) {
         throw std::invalid_argument(
-                "batchschedulingsolver::InstanceBuilder::set_machine_capacity: "
+                FUNC_SIGNATURE + ": "
                 "'capacity' must be > 0; "
                 "capacity: " + std::to_string(capacity) + ".");
     }
@@ -51,21 +51,21 @@ void InstanceBuilder::set_job_processing_time(
 {
     if (job_id < 0 || job_id >= instance_.jobs_.size()) {
         throw std::invalid_argument(
-                "batchschedulingsolver::InstanceBuilder::set_job_processing_time: "
+                FUNC_SIGNATURE + ": "
                 "invalid 'job_id'; "
                 "job_id: " + std::to_string(job_id) + "; "
                 "instance_.jobs_.size(): " + std::to_string(instance_.jobs_.size()) + ".");
     }
     if (machine_id < 0 || machine_id >= instance_.machines_.size()) {
         throw std::invalid_argument(
-                "batchschedulingsolver::InstanceBuilder::set_job_processing_time: "
+                FUNC_SIGNATURE + ": "
                 "invalid 'machine_id'; "
                 "machine_id: " + std::to_string(machine_id) + "; "
                 "instance_.machines_.size(): " + std::to_string(instance_.machines_.size()) + ".");
     }
     if (processing_time <= 0) {
         throw std::invalid_argument(
-                "batchschedulingsolver::InstanceBuilder::set_job_processing_time: "
+                FUNC_SIGNATURE + ": "
                 "'processing_time' must be > 0; "
                 "processing_time: " + std::to_string(processing_time) + ".");
     }
@@ -79,14 +79,14 @@ void InstanceBuilder::set_job_size(
 {
     if (job_id < 0 || job_id >= instance_.jobs_.size()) {
         throw std::invalid_argument(
-                "batchschedulingsolver::InstanceBuilder::set_job_size: "
+                FUNC_SIGNATURE + ": "
                 "invalid 'job_id'; "
                 "job_id: " + std::to_string(job_id) + "; "
                 "instance_.jobs_.size(): " + std::to_string(instance_.jobs_.size()) + ".");
     }
     if (size <= 0) {
         throw std::invalid_argument(
-                "batchschedulingsolver::InstanceBuilder::set_job_size: "
+                FUNC_SIGNATURE + ": "
                 "'size' must be > 0; "
                 "size: " + std::to_string(size) + ".");
     }
@@ -100,14 +100,14 @@ void InstanceBuilder::set_job_family(
 {
     if (job_id < 0 || job_id >= instance_.jobs_.size()) {
         throw std::invalid_argument(
-                "batchschedulingsolver::InstanceBuilder::set_job_family: "
+                FUNC_SIGNATURE + ": "
                 "invalid 'job_id'; "
                 "job_id: " + std::to_string(job_id) + "; "
                 "instance_.jobs_.size(): " + std::to_string(instance_.jobs_.size()) + ".");
     }
     if (family_id < 0) {
         throw std::invalid_argument(
-                "batchschedulingsolver::InstanceBuilder::set_job_family: "
+                FUNC_SIGNATURE + ": "
                 "'family_id' must be >= 0; "
                 "family_id: " + std::to_string(family_id) + ".");
     }
@@ -121,14 +121,14 @@ void InstanceBuilder::set_job_release_date(
 {
     if (job_id < 0 || job_id >= instance_.jobs_.size()) {
         throw std::invalid_argument(
-                "batchschedulingsolver::InstanceBuilder::set_job_release_date: "
+                FUNC_SIGNATURE + ": "
                 "invalid 'job_id'; "
                 "job_id: " + std::to_string(job_id) + "; "
                 "instance_.jobs_.size(): " + std::to_string(instance_.jobs_.size()) + ".");
     }
     if (release_date < 0) {
         throw std::invalid_argument(
-                "batchschedulingsolver::InstanceBuilder::set_job_release_date: "
+                FUNC_SIGNATURE + ": "
                 "'release_date' must be >= 0; "
                 "release_date: " + std::to_string(release_date) + ".");
     }
@@ -142,14 +142,14 @@ void InstanceBuilder::set_job_due_date(
 {
     if (job_id < 0 || job_id >= instance_.jobs_.size()) {
         throw std::invalid_argument(
-                "batchschedulingsolver::InstanceBuilder::set_job_due_date: "
+                FUNC_SIGNATURE + ": "
                 "invalid 'job_id'; "
                 "job_id: " + std::to_string(job_id) + "; "
                 "instance_.jobs_.size(): " + std::to_string(instance_.jobs_.size()) + ".");
     }
     if (due_date < 0) {
         throw std::invalid_argument(
-                "batchschedulingsolver::InstanceBuilder::set_job_due_date: "
+                FUNC_SIGNATURE + ": "
                 "'due_date' must be >= 0; "
                 "due_date: " + std::to_string(due_date) + ".");
     }
@@ -163,14 +163,14 @@ void InstanceBuilder::set_job_weight(
 {
     if (job_id < 0 || job_id >= instance_.jobs_.size()) {
         throw std::invalid_argument(
-                "batchschedulingsolver::InstanceBuilder::set_job_weight: "
+                FUNC_SIGNATURE + ": "
                 "invalid 'job_id'; "
                 "job_id: " + std::to_string(job_id) + "; "
                 "instance_.jobs_.size(): " + std::to_string(instance_.jobs_.size()) + ".");
     }
     if (weight < 0) {
         throw std::invalid_argument(
-                "batchschedulingsolver::InstanceBuilder::set_job_weight: "
+                FUNC_SIGNATURE + ": "
                 "'weight' must be >= 0; "
                 "weight: " + std::to_string(weight) + ".");
     }
@@ -185,7 +185,8 @@ void InstanceBuilder::read(
     std::ifstream file(instance_path);
     if (!file.good()) {
         throw std::runtime_error(
-                "Unable to open file \"" + instance_path + "\".");
+                FUNC_SIGNATURE + ": "
+                "unable to open file \"" + instance_path + "\".");
     }
     if (format == "" || format == "alfieri2021") {
         read_alfieri2021(file);
@@ -193,7 +194,8 @@ void InstanceBuilder::read(
         read_queiroga2020(file);
     } else {
         throw std::invalid_argument(
-                "Unknown instance format \"" + format + "\".");
+                FUNC_SIGNATURE + ": "
+                "unknown instance format \"" + format + "\".");
     }
     file.close();
 }

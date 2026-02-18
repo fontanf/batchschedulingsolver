@@ -71,16 +71,17 @@ Output run(
     // Run algorithm.
     std::string algorithm = vm["algorithm"].as<std::string>();
 
-    //} else {
-    //    throw std::invalid_argument(
-    //            "Unknown algorithm \"" + algorithm + "\".");
-    //}
-
     if (algorithm == "greedy-longest-processing-time") {
         Parameters parameters;
         read_args(parameters, vm);
         return greedy_longest_processing_time(instance, parameters);
+
+    } else {
+        throw std::invalid_argument(
+                FUNC_SIGNATURE + ": "
+                "unknown algorithm \"" + algorithm + "\".");
     }
+
     return Output(instance);
 }
 

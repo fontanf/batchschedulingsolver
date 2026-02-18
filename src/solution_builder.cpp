@@ -65,7 +65,7 @@ Solution SolutionBuilder::build()
                 // Check for duplicate jobs in the solution.
                 if (this->solution_.contains(job_id)) {
                     throw std::invalid_argument(
-                            "batchschedulingsolver::SolutionBuilder::build: "
+                            FUNC_SIGNATURE + ": "
                             "duplicate job in solution; "
                             "job_id: " + std::to_string(job_id) + ".");
                 }
@@ -136,8 +136,8 @@ void SolutionBuilder::read(
     std::ifstream file(certificate_path);
     if (!file.good()) {
         throw std::runtime_error(
-            "batchschedulingsolver::SolutionBuilder::read: "
-            "unable to open file \"" + certificate_path + "\".");
+                FUNC_SIGNATURE + ": "
+                "unable to open file \"" + certificate_path + "\".");
     }
 
     nlohmann::json j;
