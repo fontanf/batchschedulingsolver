@@ -80,6 +80,9 @@ private:
      * Private methods
      */
 
+    /** Read an instance from a file in 'json' format. */
+    void read_json(std::ifstream& file);
+
     /** Read an instance from a file in 'alfieri2021' format. */
     void read_alfieri2021(std::ifstream& file);
 

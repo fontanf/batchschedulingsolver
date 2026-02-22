@@ -188,7 +188,9 @@ void InstanceBuilder::read(
                 FUNC_SIGNATURE + ": "
                 "unable to open file \"" + instance_path + "\".");
     }
-    if (format == "" || format == "alfieri2021") {
+    if (format == "" || format == "json") {
+        read_json(file);
+    } else if (format == "" || format == "alfieri2021") {
         read_alfieri2021(file);
     } else if (format == "queiroga2020") {
         read_queiroga2020(file);
@@ -198,6 +200,53 @@ void InstanceBuilder::read(
                 "unknown instance format \"" + format + "\".");
     }
     file.close();
+}
+
+void InstanceBuilder::read_json(std::ifstream& file)
+{
+    nlohmann ::json j;
+    file >> j;
+
+    if (j.contains("objective")) {
+        std::stringstream objective_ss;
+        objective_ss << std::string(j["objective"]);
+        Objective objective;
+        objective_ss >> objective;
+        set_objective(objective);
+    }
+
+    // Read machines.
+    MachineId number_of_machines = j["machines"].size();
+    set_number_of_machines(number_of_machines);
+    for (MachineId machine_id = 0;
+            machine_id < number_of_machines;
+            ++machine_id) {
+        set_machine_capacity(machine_id, j["machines"][machine_id]["capacity"]);
+    }
+
+    // Read jobs.
+    JobId number_of_jobs = j["jobs"].size();
+    for (JobId job_id = 0; job_id < number_of_jobs; ++job_id) {
+        add_job();
+        for (MachineId machine_id = 0;
+                machine_id < number_of_machines;
+                ++machine_id) {
+            set_job_processing_time(
+                    job_id,
+                    machine_id,
+                    j["jobs"][job_id]["processing_times"][machine_id]);
+        }
+        if (j["jobs"][job_id].contains("size"))
+            set_job_size(job_id, j["jobs"][job_id]["size"]);
+        if (j["jobs"][job_id].contains("family_id"))
+            set_job_family(job_id, j["jobs"][job_id]["family_id"]);
+        if (j["jobs"][job_id].contains("release_date"))
+            set_job_release_date(job_id, j["jobs"][job_id]["release_date"]);
+        if (j["jobs"][job_id].contains("due_date"))
+            set_job_due_date(job_id, j["jobs"][job_id]["due_date"]);
+        if (j["jobs"][job_id].contains("weight"))
+            set_job_weight(job_id, j["jobs"][job_id]["weight"]);
+    }
 }
 
 void InstanceBuilder::read_alfieri2021(std::ifstream& file)

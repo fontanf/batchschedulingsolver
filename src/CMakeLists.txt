@@ -27,3 +27,21 @@ if(BATCHSCHEDULINGSOLVER_BUILD_MAIN)
     set_target_properties(BatchSchedulingSolver_main PROPERTIES OUTPUT_NAME "batchschedulingsolver")
     install(TARGETS BatchSchedulingSolver_main)
 endif()
+
+add_library(BatchSchedulingSolver_generator)
+target_sources(BatchSchedulingSolver_generator PRIVATE
+    generator.cpp)
+target_link_libraries(BatchSchedulingSolver_generator PUBLIC
+    BatchSchedulingSolver_batchschedulingsolver)
+add_library(BatchSchedulingSolver::generator ALIAS BatchSchedulingSolver_generator)
+
+if(BATCHSCHEDULINGSOLVER_BUILD_MAIN)
+    add_executable(BatchSchedulingSolver_generator_main)
+    target_sources(BatchSchedulingSolver_generator_main PRIVATE
+        generator_main.cpp)
+    target_link_libraries(BatchSchedulingSolver_generator_main PUBLIC
+        BatchSchedulingSolver_generator
+        Boost::program_options)
+    set_target_properties(BatchSchedulingSolver_generator_main PROPERTIES OUTPUT_NAME "batchschedulingsolver_generator")
+    install(TARGETS BatchSchedulingSolver_generator_main)
+endif()

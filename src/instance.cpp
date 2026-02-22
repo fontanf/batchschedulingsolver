@@ -62,6 +62,47 @@ std::ostream& batchschedulingsolver::operator<<(
     return os;
 }
 
+void Instance::write(
+        const std::string& instance_path,
+        const std::string& format) const
+{
+    if (instance_path.empty())
+        return;
+    std::ofstream file{instance_path};
+    if (!file.good()) {
+        throw std::runtime_error(
+                FUNC_SIGNATURE + ": "
+                "unable to open file \"" + instance_path + "\".");
+    }
+
+    nlohmann::json json;
+
+    std::stringstream objective_ss;
+    objective_ss << this->objective();
+    json["objective"] = objective_ss.str();
+    for (MachineId machine_id = 0;
+            machine_id < this->number_of_machines();
+            ++machine_id) {
+        const Machine& machine = this->machine(machine_id);
+        json["machines"][machine_id]["capacity"] = machine.capacity;
+    }
+    for (JobId job_id = 0; job_id < this->number_of_jobs(); ++job_id) {
+        const Job& job = this->job(job_id);
+        for (MachineId machine_id = 0;
+                machine_id < this->number_of_machines();
+                ++machine_id) {
+            json["jobs"][job_id]["processing_times"][machine_id] = job.processing_times[machine_id];
+        }
+        json["jobs"][job_id]["size"] = job.size;
+        json["jobs"][job_id]["family_id"] = job.family_id;
+        json["jobs"][job_id]["release_date"] = job.release_date;
+        json["jobs"][job_id]["due_date"] = job.due_date;
+        json["jobs"][job_id]["weight"] = job.weight;
+    }
+
+    file << std::setw(4) << json << std::endl;
+}
+
 std::ostream& Instance::format(
         std::ostream& os,
         int verbosity_level) const
