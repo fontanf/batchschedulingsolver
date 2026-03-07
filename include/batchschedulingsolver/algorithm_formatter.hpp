@@ -33,22 +33,51 @@ struct Output: optimizationtools::Output
 
     Time maximum_lateness_bound = -1;
 
+    Time throughput_bound = -1;
+
+
+    double bound() const
+    {
+        switch (solution.instance().objective()) {
+        case Objective::Makespan:
+            return this->makespan_bound;
+        case Objective::TotalFlowTime:
+            return this->total_flow_time_bound;
+        case Objective::TotalTardiness:
+            return this->total_tardiness_bound;
+        case Objective::MaximumLateness:
+            return this->maximum_lateness_bound;
+        case Objective::Throughput:
+            return this->throughput_bound;
+        }
+        return -1;
+    }
 
     virtual nlohmann::json to_json() const
     {
         return nlohmann::json {
             {"Solution", this->solution.to_json()},
+            {"MakespanBound", this->makespan_bound},
+            {"TotalFlowTimeBound", this->total_flow_time_bound},
+            {"TotalTardinessBound", this->total_tardiness_bound},
+            {"Bound", this->bound()},
+            {"Value", this->solution.objective_value()},
             {"Time", this->time}
         };
     }
 
-    virtual int format_width() const { return 11; }
+    virtual int format_width() const { return 25; }
 
     virtual void format(std::ostream& os) const
     {
         int width = format_width();
         os
             << std::setw(width) << std::left << "Time (s): " << time << std::endl
+            << std::setw(width) << std::left << "Makespan bound: " << this->makespan_bound << std::endl
+            << std::setw(width) << std::left << "Total flow time bound: " << this->total_flow_time_bound << std::endl
+            << std::setw(width) << std::left << "Total tardiness bound: " << this->total_tardiness_bound << std::endl
+            << std::setw(width) << std::left << "Maximum lateness bound: " << this->maximum_lateness_bound << std::endl
+            << std::setw(width) << std::left << "Throughput: " << this->throughput_bound << std::endl
             ;
     }
 };

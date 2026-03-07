@@ -112,6 +112,9 @@ public:
     /** Get the maximum lateness of the solution. */
     Time maximum_lateness() const { return maximum_lateness_; }
 
+    /** Get the objective value of the solution. */
+    double objective_value() const;
+
     /** Check if the solution is feasible. */
     bool feasible() const;
 

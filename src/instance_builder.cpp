@@ -105,10 +105,10 @@ void InstanceBuilder::set_job_family(
                 "job_id: " + std::to_string(job_id) + "; "
                 "instance_.jobs_.size(): " + std::to_string(instance_.jobs_.size()) + ".");
     }
-    if (family_id < 0) {
+    if (family_id < -1) {
         throw std::invalid_argument(
                 FUNC_SIGNATURE + ": "
-                "'family_id' must be >= 0; "
+                "'family_id' must be >= -1; "
                 "family_id: " + std::to_string(family_id) + ".");
     }
 
@@ -147,10 +147,10 @@ void InstanceBuilder::set_job_due_date(
                 "job_id: " + std::to_string(job_id) + "; "
                 "instance_.jobs_.size(): " + std::to_string(instance_.jobs_.size()) + ".");
     }
-    if (due_date < 0) {
+    if (due_date < -1) {
         throw std::invalid_argument(
                 FUNC_SIGNATURE + ": "
-                "'due_date' must be >= 0; "
+                "'due_date' must be >= -1; "
                 "due_date: " + std::to_string(due_date) + ".");
     }
 

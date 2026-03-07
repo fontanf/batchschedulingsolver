@@ -131,7 +131,8 @@ Solution SolutionBuilder::build()
 }
 
 void SolutionBuilder::read(
-        const std::string& certificate_path)
+        const std::string& certificate_path,
+        const std::string& format)
 {
     std::ifstream file(certificate_path);
     if (!file.good()) {

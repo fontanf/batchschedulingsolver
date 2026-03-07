@@ -35,3 +35,14 @@ python scripts/visualize.py solution.json
 
 $1 \mid \text{p-batch}, \text{size}_j \mid C_{\max}$
 * Greedy, longest processing-time `greedy-longest-processing-time`
+* MILP, rank-based `milp-rank-based`
+
+
+Generate test instances list for each algorithm:
+```shell
+python scripts/solve_test_data.py  --algorithm milp-rank-based  --output test/algorithms/milp_rank_based_test.txt  --instances \
+        data/test_makespan_single.txt
+cmake --build build --config Release --target clean
+cmake --build build --config Release --parallel  &&  cmake --install build --config Release --prefix install
+ctest --parallel --output-on-failure  --test-dir build/test
+```

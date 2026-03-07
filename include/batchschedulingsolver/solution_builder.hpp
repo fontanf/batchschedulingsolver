@@ -17,7 +17,9 @@ public:
     SolutionBuilder& set_instance(const Instance& instance);
 
     /** Read a solution from a file. */
-    void read(const std::string& certificate_path);
+    void read(
+            const std::string& certificate_path,
+            const std::string& format = "default");
 
     /** Add a new batch to a machine. */
     void append_batch(

@@ -1,6 +1,7 @@
 #include "batchschedulingsolver/algorithm_formatter.hpp"
 #include "batchschedulingsolver/instance_builder.hpp"
 #include "batchschedulingsolver/algorithms/greedy_longest_processing_time.hpp"
+#include "batchschedulingsolver/algorithms/milp_rank_based.hpp"
 
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
@@ -75,6 +76,11 @@ Output run(
         Parameters parameters;
         read_args(parameters, vm);
         return greedy_longest_processing_time(instance, parameters);
+
+    } else if (algorithm == "milp-rank-based") {
+        MilpRankBasedParameters parameters;
+        read_args(parameters, vm);
+        return milp_rank_based(instance, parameters);
 
     } else {
         throw std::invalid_argument(

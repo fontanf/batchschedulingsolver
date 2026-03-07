@@ -6,3 +6,13 @@ target_include_directories(BatchSchedulingSolver_greedy_longest_processing_time 
 target_link_libraries(BatchSchedulingSolver_greedy_longest_processing_time PUBLIC
     BatchSchedulingSolver_batchschedulingsolver)
 add_library(BatchSchedulingSolver::greedy_longest_processing_time ALIAS BatchSchedulingSolver_greedy_longest_processing_time)
+
+add_library(BatchSchedulingSolver_milp_rank_based)
+target_sources(BatchSchedulingSolver_milp_rank_based PRIVATE
+    milp_rank_based.cpp)
+target_include_directories(BatchSchedulingSolver_milp_rank_based PUBLIC
+    ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(BatchSchedulingSolver_milp_rank_based PUBLIC
+    BatchSchedulingSolver_batchschedulingsolver
+    MathOptSolversCMake::milp)
+add_library(BatchSchedulingSolver::milp_rank_based ALIAS BatchSchedulingSolver_milp_rank_based)

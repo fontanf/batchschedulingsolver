@@ -2,6 +2,23 @@
 
 using namespace batchschedulingsolver;
 
+double Solution::objective_value() const
+{
+    switch (this->instance().objective()) {
+    case Objective::Makespan:
+        return this->makespan();
+    case Objective::TotalFlowTime:
+        return this->total_flow_time();
+    case Objective::TotalTardiness:
+        return this->total_tardiness();
+    case Objective::MaximumLateness:
+        return this->maximum_lateness();
+    case Objective::Throughput:
+        return this->throughput();
+    }
+    return -1;
+}
+
 bool Solution::feasible() const
 {
     return (this->number_of_overlapping_batches_ == 0
