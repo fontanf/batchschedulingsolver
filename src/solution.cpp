@@ -1,9 +1,16 @@
 #include "batchschedulingsolver/solution.hpp"
 
+#include "optimizationtools/utils/utils.hpp"
+
 using namespace batchschedulingsolver;
 
 double Solution::objective_value() const
 {
+    if (!feasible()) {
+        return (objective_direction(this->instance().objective()) == optimizationtools::ObjectiveDirection::Minimize)?
+            +std::numeric_limits<double>::infinity():
+            -std::numeric_limits<double>::infinity();
+    }
     switch (this->instance().objective()) {
     case Objective::Makespan:
         return this->makespan();

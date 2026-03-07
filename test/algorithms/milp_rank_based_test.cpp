@@ -29,3 +29,17 @@ INSTANTIATE_TEST_SUITE_P(
                 {
                     get_test_instance_paths(get_path({"test", "algorithms", "milp_rank_based_test.txt"})),
                 })));
+
+INSTANTIATE_TEST_SUITE_P(
+        MilpRankBasedUnrelated,
+        ExactAlgorithmTest,
+        testing::ValuesIn(get_test_params(
+                {
+                    [](const Instance& instance)
+                    {
+                        return milp_rank_based_unrelated(instance);
+                    },
+                },
+                {
+                    get_test_instance_paths(get_path({"test", "algorithms", "milp_rank_based_unrelated_test.txt"})),
+                })));

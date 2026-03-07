@@ -82,6 +82,11 @@ Output run(
         read_args(parameters, vm);
         return milp_rank_based(instance, parameters);
 
+    } else if (algorithm == "milp-rank-based-unrelated") {
+        MilpRankBasedParameters parameters;
+        read_args(parameters, vm);
+        return milp_rank_based_unrelated(instance, parameters);
+
     } else {
         throw std::invalid_argument(
                 FUNC_SIGNATURE + ": "

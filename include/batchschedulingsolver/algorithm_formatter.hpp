@@ -3,16 +3,9 @@
 #include "batchschedulingsolver/solution_builder.hpp"
 
 #include "optimizationtools/utils/output.hpp"
-#include "optimizationtools/utils/utils.hpp"
 
 namespace batchschedulingsolver
 {
-
-inline optimizationtools::ObjectiveDirection objective_direction(
-        Objective objective)
-{
-    return optimizationtools::ObjectiveDirection::Minimize;
-}
 
 struct Output: optimizationtools::Output
 {
@@ -62,6 +55,7 @@ struct Output: optimizationtools::Output
             {"TotalTardinessBound", this->total_tardiness_bound},
             {"Bound", this->bound()},
             {"Value", this->solution.objective_value()},
+            {"Optimal", this->bound() == this->solution.objective_value()},
             {"Time", this->time}
         };
     }

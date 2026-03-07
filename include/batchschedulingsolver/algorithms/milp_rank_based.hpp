@@ -2,7 +2,7 @@
 
 #include "batchschedulingsolver/algorithm_formatter.hpp"
 
-#include "mathoptsolverscmake/milp.hpp"
+#include "mathoptsolverscmake/common.hpp"
 
 namespace batchschedulingsolver
 {
@@ -41,11 +41,11 @@ Output milp_rank_based_release_dates(
         const Instance& instance,
         const MilpRankBasedParameters& parameters = {});
 
-Output milp_rank_based_parallel(
+Output milp_rank_based_unrelated(
         const Instance& instance,
         const MilpRankBasedParameters& parameters = {});
 
-Output milp_rank_based_parallel_release_dates(
+Output milp_rank_based_unrelated_release_dates(
         const Instance& instance,
         const MilpRankBasedParameters& parameters = {});
 

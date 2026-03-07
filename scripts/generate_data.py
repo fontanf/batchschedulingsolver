@@ -17,7 +17,7 @@ objectives = [
 
 instances_paths = {}
 for objective, objective_short in objectives:
-    for environnement in ["single", "parallel"]:
+    for environnement in ["single", "parallel", "unrelated"]:
         instances_path = os.path.join(
                 "data",
                 "test_" + objective_short + "_" + environnement)
@@ -32,45 +32,51 @@ with contextlib.ExitStack() as stack:
 
     for objective, objective_short in objectives:
         for number_of_machines in [1, 2, 3, 4, 5]:
-            environnement = "single" if number_of_machines == 1 else "parallel"
-            for number_of_batches_per_machine in [1, 2, 3, 4, 5]:
-                for number_of_jobs_per_batch in [1, 2, 3, 4, 5]:
-                    for seed in [0, 1]:
-                        instances_path = instances_paths[(objective, environnement)]
+            for environnement in ["parallel", "unrelated"]:
+                if number_of_machines == 1:
+                    if environnement == "parallel":
+                        environnement = "single"
+                    else:
+                        continue
+                for number_of_batches_per_machine in [1, 2, 3, 4, 5]:
+                    for number_of_jobs_per_batch in [1, 2, 3, 4, 5]:
+                        for seed in [0, 1]:
+                            instances_path = instances_paths[(objective, environnement)]
 
-                        instance_base_path = os.path.join(
-                                "tests",
-                                objective + "_" + environnement,
-                                objective_short
-                                + f"_n{number_of_machines}"
-                                f"x{number_of_batches_per_machine}"
-                                f"x{number_of_jobs_per_batch}"
-                                f"_s{seed}"
-                                f".json")
-                        instance_full_path = os.path.join("data", instance_base_path)
-                        if not os.path.exists(os.path.dirname(instance_full_path)):
-                            os.makedirs(os.path.dirname(instance_full_path))
+                            instance_base_path = os.path.join(
+                                    "tests",
+                                    objective + "_" + environnement,
+                                    objective_short
+                                    + f"_n{number_of_machines}"
+                                    f"x{number_of_batches_per_machine}"
+                                    f"x{number_of_jobs_per_batch}"
+                                    f"_s{seed}"
+                                    f".json")
+                            instance_full_path = os.path.join("data", instance_base_path)
+                            if not os.path.exists(os.path.dirname(instance_full_path)):
+                                os.makedirs(os.path.dirname(instance_full_path))
 
-                        weight_range = 1
-                        if objective_short in ["twft", "twt", "throughput"]:
-                            weight_range = 100
+                            weight_range = 1
+                            if objective_short in ["twft", "twt", "throughput"]:
+                                weight_range = 100
 
-                        command = generator_main
-                        command += "  --objective " + objective.replace("_weighted", "").replace("_", "-")
-                        command += f"  --number-of-machines \"{number_of_machines}\""
-                        command += f"  --number-of-batches-per-machine \"{number_of_batches_per_machine}\""
-                        command += f"  --number-of-jobs-per-batch \"{number_of_jobs_per_batch}\""
-                        command += f"  --capacity 100"
-                        command += f"  --processing-times-range 100"
-                        command += f"  --weights-range {weight_range}"
-                        command += f"  --seed {seed}"
-                        command += f"  --output \"{instance_full_path}\""
-                        print(command)
-                        status = os.system(command)
-                        if status != 0:
-                            sys.exit(1)
+                            command = generator_main
+                            command += "  --objective " + objective.replace("_weighted", "").replace("_", "-")
+                            command += f"  --number-of-machines \"{number_of_machines}\""
+                            command += f"  --number-of-batches-per-machine \"{number_of_batches_per_machine}\""
+                            command += f"  --number-of-jobs-per-batch \"{number_of_jobs_per_batch}\""
+                            command += f"  --unrelated-machines " + str(environnement == "unrelated")
+                            command += f"  --capacity 100"
+                            command += f"  --processing-times-range 100"
+                            command += f"  --weights-range {weight_range}"
+                            command += f"  --seed {seed}"
+                            command += f"  --output \"{instance_full_path}\""
+                            print(command)
+                            status = os.system(command)
+                            if status != 0:
+                                sys.exit(1)
 
-                        files[instances_path].write(f"{instance_base_path}\n")
+                            files[instances_path].write(f"{instance_base_path}\n")
 
 
 instances_path = os.path.join(
