@@ -57,8 +57,24 @@ Output batchschedulingsolver::greedy_longest_processing_time(
 
     }
 
+    bool identical_sizes = true;
+    for (JobId job_id = 1;
+            job_id < instance.number_of_jobs();
+            ++job_id) {
+        const Job& job = instance.job(job_id);
+        if (job.size != instance.job(0).size) {
+            identical_sizes = false;
+            break;
+        }
+    }
+
     Solution solution = solution_builder.build();
     algorithm_formatter.update_solution(solution, "greedy");
+    if (instance.objective() == Objective::Makespan
+            && instance.number_of_machines() == 1
+            && identical_sizes) {
+        algorithm_formatter.update_makespan_bound(solution.makespan(), "bound");
+    }
     algorithm_formatter.end();
     return output;
 }

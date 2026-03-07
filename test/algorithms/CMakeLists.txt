@@ -7,6 +7,18 @@ target_link_libraries(BatchSchedulingSolver_tests PUBLIC
     GTest::gtest_main)
 add_library(BatchSchedulingSolver::tests ALIAS BatchSchedulingSolver_tests)
 
+add_executable(BatchSchedulingSolver_greedy_longest_processing_time_test)
+target_sources(BatchSchedulingSolver_greedy_longest_processing_time_test PRIVATE
+    greedy_longest_processing_time_test.txt
+    greedy_longest_processing_time_test.cpp)
+target_link_libraries(BatchSchedulingSolver_greedy_longest_processing_time_test
+    BatchSchedulingSolver_tests
+    BatchSchedulingSolver_greedy_longest_processing_time
+    GTest::gtest_main)
+gtest_discover_tests(BatchSchedulingSolver_greedy_longest_processing_time_test
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    PROPERTIES TIMEOUT 3600)
+
 add_executable(BatchSchedulingSolver_milp_rank_based_test)
 target_sources(BatchSchedulingSolver_milp_rank_based_test PRIVATE
     milp_rank_based_test.txt

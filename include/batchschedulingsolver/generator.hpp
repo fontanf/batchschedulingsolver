@@ -13,6 +13,7 @@ struct GenerateInput
     MachineId number_of_machines = 1;
     MachineId number_of_batches_per_machine = 3;
     MachineId number_of_jobs_per_batch = 3;
+    bool identical_sizes = false;
     Time capacity = 100;
     Time processing_times_range = 100;
     Time weights_range = 1;

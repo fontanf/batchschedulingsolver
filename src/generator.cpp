@@ -17,8 +17,8 @@ Instance batchschedulingsolver::generate(
         instance_builder.set_machine_capacity(machine_id, input.capacity);
     }
     JobId number_of_jobs = input.number_of_machines * input.number_of_batches_per_machine * input.number_of_jobs_per_batch;
-    Size average_size = input.capacity / input.number_of_jobs_per_batch;
     std::uniform_int_distribution<Time> distribution_p(1, input.processing_times_range);
+    Size average_size = input.capacity / input.number_of_jobs_per_batch;
     std::uniform_int_distribution<Time> distribution_s(
             (std::max)(average_size / 2, (Size)1),
             (std::min)(3 * average_size / 2, input.capacity));
@@ -34,7 +34,11 @@ Instance batchschedulingsolver::generate(
                     machine_id,
                     processing_time);
         }
-        instance_builder.set_job_size(job_id, distribution_s(generator));
+        if (input.identical_sizes) {
+            instance_builder.set_job_size(job_id, average_size);
+        } else {
+            instance_builder.set_job_size(job_id, distribution_s(generator));
+        }
         instance_builder.set_job_weight(job_id, distribution_w(generator));
     }
     return instance_builder.build();
