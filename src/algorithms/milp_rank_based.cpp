@@ -105,20 +105,19 @@ MilpModelThreeIndexNoStarts create_milp_model_three_index_no_starts(
 
     // (16) Batch capacity:
     //   sum_{job_id} sum_{machine_id} s_{job_id} * x_jkm[j][k][m] <= B  for all batch_id.
-    for (JobId batch_id = 0; batch_id < instance.number_of_jobs(); ++batch_id) {
-        model.model.constraints_starts.push_back(model.model.elements_variables.size());
-        model.model.constraints_names.push_back("cap_{" + std::to_string(batch_id) + "}");
-        for (JobId job_id = 0; job_id < instance.number_of_jobs(); ++job_id) {
-            const Job& job = instance.job(job_id);
-            for (MachineId machine_id = 0; machine_id < instance.number_of_machines(); ++machine_id) {
+    for (MachineId machine_id = 0; machine_id < instance.number_of_machines(); ++machine_id) {
+        const Machine& machine = instance.machine(machine_id);
+        for (JobId batch_id = 0; batch_id < instance.number_of_jobs(); ++batch_id) {
+            model.model.constraints_starts.push_back(model.model.elements_variables.size());
+            model.model.constraints_names.push_back("cap_{" + std::to_string(machine_id) + "_" + std::to_string(batch_id) + "}");
+            for (JobId job_id = 0; job_id < instance.number_of_jobs(); ++job_id) {
+                const Job& job = instance.job(job_id);
                 model.model.elements_variables.push_back(model.x_jkm[job_id][batch_id][machine_id]);
-                model.model.elements_coefficients.push_back(
-                        static_cast<double>(job.size));
+                model.model.elements_coefficients.push_back(job.size);
             }
+            model.model.constraints_lower_bounds.push_back(-std::numeric_limits<double>::infinity());
+            model.model.constraints_upper_bounds.push_back(machine.capacity);
         }
-        model.model.constraints_lower_bounds.push_back(-std::numeric_limits<double>::infinity());
-        model.model.constraints_upper_bounds.push_back(
-                static_cast<double>(instance.machine(0).capacity));
     }
 
     // (17) Batch processing time is the max processing time of its assigned jobs:
@@ -442,6 +441,12 @@ struct MilpModelThreeIndex
     std::vector<std::vector<std::vector<int>>> x_jkm;
 
     /**
+     * p_km[batch_id][machine_id] = processing time of batch batch_id on
+     * machine machine_id.
+     */
+    std::vector<std::vector<int>> p_km;
+
+    /**
      * s_km[batch_id][machine_id] = start time of batch batch_id on machine
      * machine_id.
      */
@@ -476,6 +481,22 @@ MilpModelThreeIndex create_milp_model_three_index(
                 model.model.variables_types.push_back(mathoptsolverscmake::VariableType::Binary);
                 model.model.objective_coefficients.push_back(0);
             }
+        }
+    }
+
+    // Variables p_km[batch_id][machine_id].
+    model.p_km.assign(
+            instance.number_of_jobs(),
+            std::vector<int>(instance.number_of_machines()));
+    for (MachineId machine_id = 0; machine_id < instance.number_of_machines(); ++machine_id) {
+        for (JobId batch_id = 0; batch_id < instance.number_of_jobs(); ++batch_id) {
+            model.p_km[batch_id][machine_id] = model.model.variables_lower_bounds.size();
+            model.model.variables_names.push_back(
+                    "p_{" + std::to_string(machine_id) + "," + std::to_string(batch_id) + "}");
+            model.model.variables_lower_bounds.push_back(0);
+            model.model.variables_upper_bounds.push_back(std::numeric_limits<double>::infinity());
+            model.model.variables_types.push_back(mathoptsolverscmake::VariableType::Continuous);
+            model.model.objective_coefficients.push_back(0);
         }
     }
 
@@ -522,20 +543,18 @@ MilpModelThreeIndex create_milp_model_three_index(
 
     // (31) Batch capacity:
     //   sum_{job_id} s_{job_id} * x_jkm[j][k][m] <= B  for all batch_id, machine_id.
-    for (JobId batch_id = 0; batch_id < instance.number_of_jobs(); ++batch_id) {
-        for (MachineId machine_id = 0; machine_id < instance.number_of_machines(); ++machine_id) {
+    for (MachineId machine_id = 0; machine_id < instance.number_of_machines(); ++machine_id) {
+        const Machine& machine = instance.machine(machine_id);
+        for (JobId batch_id = 0; batch_id < instance.number_of_jobs(); ++batch_id) {
             model.model.constraints_starts.push_back(model.model.elements_variables.size());
-            model.model.constraints_names.push_back(
-                    "cap_{" + std::to_string(batch_id) + "," + std::to_string(machine_id) + "}");
+            model.model.constraints_names.push_back("cap_{" + std::to_string(machine_id) + "_" + std::to_string(batch_id) + "}");
             for (JobId job_id = 0; job_id < instance.number_of_jobs(); ++job_id) {
                 const Job& job = instance.job(job_id);
                 model.model.elements_variables.push_back(model.x_jkm[job_id][batch_id][machine_id]);
-                model.model.elements_coefficients.push_back(
-                        static_cast<double>(job.size));
+                model.model.elements_coefficients.push_back(job.size);
             }
             model.model.constraints_lower_bounds.push_back(-std::numeric_limits<double>::infinity());
-            model.model.constraints_upper_bounds.push_back(
-                    static_cast<double>(instance.machine(0).capacity));
+            model.model.constraints_upper_bounds.push_back(machine.capacity);
         }
     }
 
@@ -560,49 +579,63 @@ MilpModelThreeIndex create_milp_model_three_index(
         }
     }
 
-    // (33) Sequential batch ordering: s_km[k][m] >= s_km[k-1][m] + p_j * x_jkm[j][k-1][m]
-    //   for all job_id, batch_id > 0, machine_id.
+    // Processing time definition:
+    //   p_km[k][m] >= p_jm * x_jkm[j][k][m]  for all job_id, batch_id, machine_id.
+    //   Rearranged: p_km - p_jm * x_jkm >= 0.
     for (JobId job_id = 0; job_id < instance.number_of_jobs(); ++job_id) {
         const Job& job = instance.job(job_id);
-        for (JobId batch_id = 1; batch_id < instance.number_of_jobs(); ++batch_id) {
-            for (MachineId machine_id = 0; machine_id < instance.number_of_machines(); ++machine_id) {
+        for (MachineId machine_id = 0; machine_id < instance.number_of_machines(); ++machine_id) {
+            for (JobId batch_id = 0; batch_id < instance.number_of_jobs(); ++batch_id) {
                 model.model.constraints_starts.push_back(model.model.elements_variables.size());
                 model.model.constraints_names.push_back(
-                        "seq_{" + std::to_string(job_id)
+                        "proc_{" + std::to_string(job_id)
                         + "," + std::to_string(batch_id)
                         + "," + std::to_string(machine_id) + "}");
-                model.model.elements_variables.push_back(model.s_km[batch_id][machine_id]);
+                model.model.elements_variables.push_back(model.p_km[batch_id][machine_id]);
                 model.model.elements_coefficients.push_back(1.0);
-                model.model.elements_variables.push_back(model.s_km[batch_id - 1][machine_id]);
-                model.model.elements_coefficients.push_back(-1.0);
-                model.model.elements_variables.push_back(model.x_jkm[job_id][batch_id - 1][machine_id]);
-                model.model.elements_coefficients.push_back(-job.processing_times[machine_id]);
+                model.model.elements_variables.push_back(model.x_jkm[job_id][batch_id][machine_id]);
+                model.model.elements_coefficients.push_back(
+                        -static_cast<double>(job.processing_times[machine_id]));
                 model.model.constraints_lower_bounds.push_back(0);
                 model.model.constraints_upper_bounds.push_back(std::numeric_limits<double>::infinity());
             }
         }
     }
 
-    // (35) Makespan >= completion time of last batch on each machine:
-    //   c_max >= s_km[n-1][m] + p_j * x_jkm[j][n-1][m]  for all job_id, machine_id.
-    for (JobId job_id = 0; job_id < instance.number_of_jobs(); ++job_id) {
-        const Job& job = instance.job(job_id);
-        for (MachineId machine_id = 0; machine_id < instance.number_of_machines(); ++machine_id) {
+    // (33) Sequential batch ordering:
+    //   s_km[k][m] >= s_km[k-1][m] + p_km[k-1][m]  for all batch_id > 0, machine_id.
+    for (MachineId machine_id = 0; machine_id < instance.number_of_machines(); ++machine_id) {
+        for (JobId batch_id = 1; batch_id < instance.number_of_jobs(); ++batch_id) {
             model.model.constraints_starts.push_back(model.model.elements_variables.size());
             model.model.constraints_names.push_back(
-                    "makespan_{" + std::to_string(job_id)
+                    "seq_{" + std::to_string(batch_id)
                     + "," + std::to_string(machine_id) + "}");
-            model.model.elements_variables.push_back(model.c_max);
+            model.model.elements_variables.push_back(model.s_km[batch_id][machine_id]);
             model.model.elements_coefficients.push_back(1.0);
-            model.model.elements_variables.push_back(
-                    model.s_km[instance.number_of_jobs() - 1][machine_id]);
+            model.model.elements_variables.push_back(model.s_km[batch_id - 1][machine_id]);
             model.model.elements_coefficients.push_back(-1.0);
-            model.model.elements_variables.push_back(
-                    model.x_jkm[job_id][instance.number_of_jobs() - 1][machine_id]);
-            model.model.elements_coefficients.push_back(-job.processing_times[machine_id]);
+            model.model.elements_variables.push_back(model.p_km[batch_id - 1][machine_id]);
+            model.model.elements_coefficients.push_back(-1.0);
             model.model.constraints_lower_bounds.push_back(0);
             model.model.constraints_upper_bounds.push_back(std::numeric_limits<double>::infinity());
         }
+    }
+
+    // (35) Makespan >= completion time of last batch on each machine:
+    //   c_max >= s_km[n-1][m] + p_km[n-1][m]  for all machine_id.
+    for (MachineId machine_id = 0; machine_id < instance.number_of_machines(); ++machine_id) {
+        model.model.constraints_starts.push_back(model.model.elements_variables.size());
+        model.model.constraints_names.push_back("makespan_{" + std::to_string(machine_id) + "}");
+        model.model.elements_variables.push_back(model.c_max);
+        model.model.elements_coefficients.push_back(1.0);
+        model.model.elements_variables.push_back(
+                model.s_km[instance.number_of_jobs() - 1][machine_id]);
+        model.model.elements_coefficients.push_back(-1.0);
+        model.model.elements_variables.push_back(
+                model.p_km[instance.number_of_jobs() - 1][machine_id]);
+        model.model.elements_coefficients.push_back(-1.0);
+        model.model.constraints_lower_bounds.push_back(0);
+        model.model.constraints_upper_bounds.push_back(std::numeric_limits<double>::infinity());
     }
 
     return model;

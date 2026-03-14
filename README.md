@@ -40,14 +40,14 @@ $P_m \mid \text{p-batch}, B_i, \text{size}\_j \mid C_{\max}$
 * MILP, three-index `milp-rank-based-three-index-no-starts`
 * MILP, two-index `milp-rank-based-two-index-no-starts`
 
-$P_m \mid \text{p-batch}, B_i, r_j, \text{size}\_j \mid C_{\max}$
+$P_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid C_{\max}$
 * MILP, three-index `milp-rank-based-three-index`
 * MILP, two-index `milp-rank-based-two-index`
 
 $R_m \mid \text{p-batch}, B_i, \text{size}\_j \mid C_{\max}$
 * MILP, three-index `milp-rank-based-three-index-no-starts`
 
-$R_m \mid \text{p-batch}, B_i, r_j, \text{size}\_j \mid C_{\max}$
+$R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid C_{\max}$
 * MILP, three-index `milp-rank-based-three-index`
 
 
