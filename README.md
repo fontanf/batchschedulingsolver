@@ -33,25 +33,47 @@ python scripts/visualize.py solution.json
 
 ## Implemented algorithms
 
-$1 \mid \text{p-batch}, \text{size}_j \mid C_{\max}$
+$1 \mid \text{p-batch}, \text{size}\_j \mid C_{\max}$
 * Greedy, longest processing-time `greedy-longest-processing-time`
-* MILP, rank-based `milp-rank-based`
 
-$R \mid \text{p-batch}, \text{size}_j \mid C_{\max}$
-* MILP, rank-based `milp-rank-based-unrelated`
+$P_m \mid \text{p-batch}, B_i, \text{size}\_j \mid C_{\max}$
+* MILP, three-index `milp-rank-based-three-index-no-starts`
+* MILP, two-index `milp-rank-based-two-index-no-starts`
+
+$P_m \mid \text{p-batch}, B_i, r_j, \text{size}\_j \mid C_{\max}$
+* MILP, three-index `milp-rank-based-three-index`
+* MILP, two-index `milp-rank-based-two-index`
+
+$R_m \mid \text{p-batch}, B_i, \text{size}\_j \mid C_{\max}$
+* MILP, three-index `milp-rank-based-three-index-no-starts`
+
+$R_m \mid \text{p-batch}, B_i, r_j, \text{size}\_j \mid C_{\max}$
+* MILP, three-index `milp-rank-based-three-index`
 
 
 Generate test instances list for each algorithm:
 ```shell
 python scripts/solve_test_data.py  --algorithm greedy-longest-processing-time  --output test/algorithms/greedy_longest_processing_time_test.txt  --instances \
         data/test_makespan_identical_sizes.txt
-python scripts/solve_test_data.py  --algorithm milp-rank-based  --output test/algorithms/milp_rank_based_test.txt  --instances \
-        data/test_makespan_identical_sizes.txt \
-        data/test_makespan_single.txt
-python scripts/solve_test_data.py  --algorithm milp-rank-based-unrelated  --output test/algorithms/milp_rank_based_unrelated_test.txt  --instances \
+python scripts/solve_test_data.py  --algorithm milp-rank-based-three-index-no-starts  --output test/algorithms/milp_rank_based_three_index_no_starts_test.txt  --instances \
         data/test_makespan_single.txt \
         data/test_makespan_parallel.txt \
         data/test_makespan_unrelated.txt
+python scripts/solve_test_data.py  --algorithm milp-rank-based-three-index  --output test/algorithms/milp_rank_based_three_index_test.txt  --instances \
+        data/test_makespan_single.txt \
+        data/test_makespan_single_release_dates.txt \
+        data/test_makespan_parallel.txt \
+        data/test_makespan_parallel_release_dates.txt \
+        data/test_makespan_unrelated.txt \
+        data/test_makespan_unrelated_release_dates.txt
+python scripts/solve_test_data.py  --algorithm milp-rank-based-two-index-no-starts  --output test/algorithms/milp_rank_based_two_index_no_starts_test.txt  --instances \
+        data/test_makespan_single.txt \
+        data/test_makespan_parallel.txt
+python scripts/solve_test_data.py  --algorithm milp-rank-based-two-index  --output test/algorithms/milp_rank_based_two_index_test.txt  --instances \
+        data/test_makespan_single.txt \
+        data/test_makespan_single_release_dates.txt \
+        data/test_makespan_parallel.txt \
+        data/test_makespan_parallel_release_dates.txt
 cmake --build build --config Release --target clean
 cmake --build build --config Release --parallel  &&  cmake --install build --config Release --prefix install
 ctest --parallel --output-on-failure  --test-dir build/test

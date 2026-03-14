@@ -17,29 +17,57 @@ TEST_P(ExactAlgorithmTest, ExactAlgorithm)
 }
 
 INSTANTIATE_TEST_SUITE_P(
-        MilpRankBased,
+        MilpRankBasedThreeIndexNoStarts,
         ExactAlgorithmTest,
         testing::ValuesIn(get_test_params(
                 {
                     [](const Instance& instance)
                     {
-                        return milp_rank_based(instance);
+                        return milp_rank_based_three_index_no_starts(instance);
                     },
                 },
                 {
-                    get_test_instance_paths(get_path({"test", "algorithms", "milp_rank_based_test.txt"})),
+                    get_test_instance_paths(get_path({"test", "algorithms", "milp_rank_based_three_index_no_starts_test.txt"})),
                 })));
 
 INSTANTIATE_TEST_SUITE_P(
-        MilpRankBasedUnrelated,
+        MilpRankBasedThreeIndex,
         ExactAlgorithmTest,
         testing::ValuesIn(get_test_params(
                 {
                     [](const Instance& instance)
                     {
-                        return milp_rank_based_unrelated(instance);
+                        return milp_rank_based_three_index(instance);
                     },
                 },
                 {
-                    get_test_instance_paths(get_path({"test", "algorithms", "milp_rank_based_unrelated_test.txt"})),
+                    get_test_instance_paths(get_path({"test", "algorithms", "milp_rank_based_three_index_test.txt"})),
+                })));
+
+INSTANTIATE_TEST_SUITE_P(
+        MilpRankBasedTwoIndexNoStarts,
+        ExactAlgorithmTest,
+        testing::ValuesIn(get_test_params(
+                {
+                    [](const Instance& instance)
+                    {
+                        return milp_rank_based_two_index_no_starts(instance);
+                    },
+                },
+                {
+                    get_test_instance_paths(get_path({"test", "algorithms", "milp_rank_based_two_index_no_starts_test.txt"})),
+                })));
+
+INSTANTIATE_TEST_SUITE_P(
+        MilpRankBasedTwoIndex,
+        ExactAlgorithmTest,
+        testing::ValuesIn(get_test_params(
+                {
+                    [](const Instance& instance)
+                    {
+                        return milp_rank_based_two_index(instance);
+                    },
+                },
+                {
+                    get_test_instance_paths(get_path({"test", "algorithms", "milp_rank_based_two_index_test.txt"})),
                 })));

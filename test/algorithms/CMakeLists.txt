@@ -21,7 +21,9 @@ gtest_discover_tests(BatchSchedulingSolver_greedy_longest_processing_time_test
 
 add_executable(BatchSchedulingSolver_milp_rank_based_test)
 target_sources(BatchSchedulingSolver_milp_rank_based_test PRIVATE
-    milp_rank_based_test.txt
+    milp_rank_based_three_index_no_starts_test.txt
+    milp_rank_based_two_index_no_starts_test.txt
+    milp_rank_based_two_index_test.txt
     milp_rank_based_test.cpp)
 target_link_libraries(BatchSchedulingSolver_milp_rank_based_test
     BatchSchedulingSolver_tests

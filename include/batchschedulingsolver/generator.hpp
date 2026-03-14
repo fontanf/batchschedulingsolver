@@ -15,8 +15,10 @@ struct GenerateInput
     MachineId number_of_jobs_per_batch = 3;
     bool identical_sizes = false;
     Time capacity = 100;
-    bool unrelated_machines = true;
+    bool machine_independent_processing_times = false;
     Time processing_times_range = 100;
+    double release_dates_dispersion_factor = 0;
+    double due_dates_tightness_factor = 1;
     Time weights_range = 1;
 };
 

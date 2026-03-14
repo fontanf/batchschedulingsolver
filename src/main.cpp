@@ -77,15 +77,25 @@ Output run(
         read_args(parameters, vm);
         return greedy_longest_processing_time(instance, parameters);
 
-    } else if (algorithm == "milp-rank-based") {
+    } else if (algorithm == "milp-rank-based-three-index-no-starts") {
         MilpRankBasedParameters parameters;
         read_args(parameters, vm);
-        return milp_rank_based(instance, parameters);
+        return milp_rank_based_three_index_no_starts(instance, parameters);
 
-    } else if (algorithm == "milp-rank-based-unrelated") {
+    } else if (algorithm == "milp-rank-based-three-index") {
         MilpRankBasedParameters parameters;
         read_args(parameters, vm);
-        return milp_rank_based_unrelated(instance, parameters);
+        return milp_rank_based_three_index(instance, parameters);
+
+    } else if (algorithm == "milp-rank-based-two-index-no-starts") {
+        MilpRankBasedParameters parameters;
+        read_args(parameters, vm);
+        return milp_rank_based_two_index_no_starts(instance, parameters);
+
+    } else if (algorithm == "milp-rank-based-two-index") {
+        MilpRankBasedParameters parameters;
+        read_args(parameters, vm);
+        return milp_rank_based_two_index(instance, parameters);
 
     } else {
         throw std::invalid_argument(
