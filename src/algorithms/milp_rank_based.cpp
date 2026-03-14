@@ -452,7 +452,14 @@ struct MilpModelThreeIndex
      */
     std::vector<std::vector<int>> s_ik;
 
-    /** c_max = makespan. */
+    /**
+     * c_j[job_id] = completion time of job job_id.
+     *
+     * Only used when the objective is TotalFlowTime.
+     */
+    std::vector<int> c_j;
+
+    /** c_max = makespan. Only used when the objective is Makespan. */
     int c_max = -1;
 };
 
@@ -516,13 +523,30 @@ MilpModelThreeIndex create_milp_model_three_index(
         }
     }
 
-    // Variable c_max.
-    model.c_max = model.model.variables_lower_bounds.size();
-    model.model.variables_names.push_back("c_max");
-    model.model.variables_lower_bounds.push_back(0);
-    model.model.variables_upper_bounds.push_back(std::numeric_limits<double>::infinity());
-    model.model.variables_types.push_back(mathoptsolverscmake::VariableType::Continuous);
-    model.model.objective_coefficients.push_back(1);
+    if (instance.objective() == Objective::Makespan) {
+        // Variable c_max.
+        model.c_max = model.model.variables_lower_bounds.size();
+        model.model.variables_names.push_back("c_max");
+        model.model.variables_lower_bounds.push_back(0);
+        model.model.variables_upper_bounds.push_back(std::numeric_limits<double>::infinity());
+        model.model.variables_types.push_back(mathoptsolverscmake::VariableType::Continuous);
+        model.model.objective_coefficients.push_back(1);
+    }
+
+    if (instance.objective() == Objective::TotalFlowTime) {
+        // Variables c_j[job_id]: completion time of each job.
+        model.c_j.resize(instance.number_of_jobs());
+        for (JobId job_id = 0; job_id < instance.number_of_jobs(); ++job_id) {
+            const Job& job = instance.job(job_id);
+            model.c_j[job_id] = model.model.variables_lower_bounds.size();
+            model.model.variables_names.push_back("C_{" + std::to_string(job_id) + "}");
+            model.model.variables_lower_bounds.push_back(0);
+            model.model.variables_upper_bounds.push_back(std::numeric_limits<double>::infinity());
+            model.model.variables_types.push_back(mathoptsolverscmake::VariableType::Continuous);
+            model.model.objective_coefficients.push_back(
+                    static_cast<double>(job.weight));
+        }
+    }
 
     // Constraints.
 
@@ -623,19 +647,53 @@ MilpModelThreeIndex create_milp_model_three_index(
 
     // (35) Makespan >= completion time of last batch on each machine:
     //   c_max >= s_ik[i][n-1] + p_ik[i][n-1]  for all machine_id.
-    for (MachineId machine_id = 0; machine_id < instance.number_of_machines(); ++machine_id) {
-        model.model.constraints_starts.push_back(model.model.elements_variables.size());
-        model.model.constraints_names.push_back("makespan_{" + std::to_string(machine_id) + "}");
-        model.model.elements_variables.push_back(model.c_max);
-        model.model.elements_coefficients.push_back(1.0);
-        model.model.elements_variables.push_back(
-                model.s_ik[machine_id][instance.number_of_jobs() - 1]);
-        model.model.elements_coefficients.push_back(-1.0);
-        model.model.elements_variables.push_back(
-                model.p_ik[machine_id][instance.number_of_jobs() - 1]);
-        model.model.elements_coefficients.push_back(-1.0);
-        model.model.constraints_lower_bounds.push_back(0);
-        model.model.constraints_upper_bounds.push_back(std::numeric_limits<double>::infinity());
+    if (instance.objective() == Objective::Makespan) {
+        for (MachineId machine_id = 0; machine_id < instance.number_of_machines(); ++machine_id) {
+            model.model.constraints_starts.push_back(model.model.elements_variables.size());
+            model.model.constraints_names.push_back("makespan_{" + std::to_string(machine_id) + "}");
+            model.model.elements_variables.push_back(model.c_max);
+            model.model.elements_coefficients.push_back(1.0);
+            model.model.elements_variables.push_back(
+                    model.s_ik[machine_id][instance.number_of_jobs() - 1]);
+            model.model.elements_coefficients.push_back(-1.0);
+            model.model.elements_variables.push_back(
+                    model.p_ik[machine_id][instance.number_of_jobs() - 1]);
+            model.model.elements_coefficients.push_back(-1.0);
+            model.model.constraints_lower_bounds.push_back(0);
+            model.model.constraints_upper_bounds.push_back(std::numeric_limits<double>::infinity());
+        }
+    }
+
+    // Completion time constraints:
+    //   c_j >= s_ik[i][k] + p_ik[i][k] - BigM * (1 - x_jik[j][i][k])  for all j, i, k.
+    //   Rearranged: c_j - s_ik[i][k] - p_ik[i][k] - BigM * x_jik[j][i][k] >= -BigM.
+    if (instance.objective() == Objective::TotalFlowTime) {
+        double big_m = 0;
+        for (JobId job_id = 0; job_id < instance.number_of_jobs(); ++job_id)
+            big_m += instance.job(job_id).largest_processing_time;
+        for (JobId job_id = 0; job_id < instance.number_of_jobs(); ++job_id) {
+            for (MachineId machine_id = 0; machine_id < instance.number_of_machines(); ++machine_id) {
+                for (JobId batch_id = 0; batch_id < instance.number_of_jobs(); ++batch_id) {
+                    model.model.constraints_starts.push_back(model.model.elements_variables.size());
+                    model.model.constraints_names.push_back(
+                            "tft_{" + std::to_string(job_id)
+                            + "," + std::to_string(machine_id)
+                            + "," + std::to_string(batch_id) + "}");
+                    model.model.elements_variables.push_back(model.c_j[job_id]);
+                    model.model.elements_coefficients.push_back(1.0);
+                    model.model.elements_variables.push_back(model.s_ik[machine_id][batch_id]);
+                    model.model.elements_coefficients.push_back(-1.0);
+                    model.model.elements_variables.push_back(model.p_ik[machine_id][batch_id]);
+                    model.model.elements_coefficients.push_back(-1.0);
+                    model.model.elements_variables.push_back(
+                            model.x_jik[job_id][machine_id][batch_id]);
+                    model.model.elements_coefficients.push_back(-big_m);
+                    model.model.constraints_lower_bounds.push_back(-big_m);
+                    model.model.constraints_upper_bounds.push_back(
+                            std::numeric_limits<double>::infinity());
+                }
+            }
+        }
     }
 
     return model;
@@ -727,14 +785,22 @@ CbcEventHandler::CbcAction EventHandlerThreeIndex::event(CbcEvent which_event)
 
     double milp_objective_value = mathoptsolverscmake::get_solution_value(cbc_model);
     if (!output_.solution.feasible()
-            || output_.solution.makespan() > milp_objective_value) {
+            || output_.solution.objective_value() > milp_objective_value) {
         std::vector<double> milp_solution = mathoptsolverscmake::get_solution(cbc_model);
         Solution solution = retrieve_solution_three_index(instance_, milp_model_, milp_solution);
         algorithm_formatter_.update_solution(solution, "node " + std::to_string(number_of_nodes));
     }
 
     Time bound = std::ceil(mathoptsolverscmake::get_bound(cbc_model) - 1e-5);
-    algorithm_formatter_.update_makespan_bound(bound, "node " + std::to_string(number_of_nodes));
+    switch (instance_.objective()) {
+    case Objective::Makespan:
+        algorithm_formatter_.update_makespan_bound(bound, "node " + std::to_string(number_of_nodes));
+        break;
+    case Objective::TotalFlowTime:
+        algorithm_formatter_.update_total_flow_time_bound(bound, "node " + std::to_string(number_of_nodes));
+        break;
+    default: break;
+    }
 
     if (parameters_.timer.needs_to_end())
         return stop;
@@ -764,14 +830,22 @@ void xpress_callback_three_index(
 
     double milp_objective_value = mathoptsolverscmake::get_solution_value(xpress_model);
     if (!d.output.solution.feasible()
-            || d.output.solution.makespan() > milp_objective_value) {
+            || d.output.solution.objective_value() > milp_objective_value) {
         std::vector<double> milp_solution = mathoptsolverscmake::get_solution(xpress_model);
         Solution solution = retrieve_solution_three_index(d.instance, d.milp_model, milp_solution);
         d.algorithm_formatter.update_solution(solution, "");
     }
 
     Time bound = std::ceil(mathoptsolverscmake::get_bound(xpress_model) - 1e-5);
-    d.algorithm_formatter.update_makespan_bound(bound, "");
+    switch (d.instance.objective()) {
+    case Objective::Makespan:
+        d.algorithm_formatter.update_makespan_bound(bound, "");
+        break;
+    case Objective::TotalFlowTime:
+        d.algorithm_formatter.update_total_flow_time_bound(bound, "");
+        break;
+    default: break;
+    }
 
     if (d.parameters.timer.needs_to_end())
         XPRSinterrupt(xpress_model, XPRS_STOP_USER);
@@ -834,14 +908,23 @@ Output batchschedulingsolver::milp_rank_based_three_index(
                     if (!highs_output->mip_solution.empty()) {
                         double milp_objective_value = highs_output->mip_primal_bound;
                         if (!output.solution.feasible()
-                                || output.solution.makespan() > milp_objective_value) {
+                                || output.solution.objective_value() > milp_objective_value) {
                             Solution solution = retrieve_solution_three_index(instance, milp_model, highs_output->mip_solution);
                             algorithm_formatter.update_solution(solution, "node " + std::to_string(highs_output->mip_node_count));
                         }
 
                         Time bound = std::ceil(highs_output->mip_dual_bound - 1e-5);
-                        if (bound != std::numeric_limits<double>::infinity())
-                            algorithm_formatter.update_makespan_bound(bound, "node " + std::to_string(highs_output->mip_node_count));
+                        if (bound != std::numeric_limits<double>::infinity()) {
+                            switch (instance.objective()) {
+                            case Objective::Makespan:
+                                algorithm_formatter.update_makespan_bound(bound, "node " + std::to_string(highs_output->mip_node_count));
+                                break;
+                            case Objective::TotalFlowTime:
+                                algorithm_formatter.update_total_flow_time_bound(bound, "node " + std::to_string(highs_output->mip_node_count));
+                                break;
+                            default: break;
+                            }
+                        }
                     }
 
                     if (parameters.timer.needs_to_end())
@@ -882,8 +965,16 @@ Output batchschedulingsolver::milp_rank_based_three_index(
     Solution solution = retrieve_solution_three_index(instance, milp_model, milp_solution);
     algorithm_formatter.update_solution(solution, "");
 
-    algorithm_formatter.update_makespan_bound(
-            static_cast<Time>(std::ceil(milp_bound - 1e-5)), "");
+    Time bound = static_cast<Time>(std::ceil(milp_bound - 1e-5));
+    switch (instance.objective()) {
+    case Objective::Makespan:
+        algorithm_formatter.update_makespan_bound(bound, "");
+        break;
+    case Objective::TotalFlowTime:
+        algorithm_formatter.update_total_flow_time_bound(bound, "");
+        break;
+    default: break;
+    }
 
     algorithm_formatter.end();
     return output;

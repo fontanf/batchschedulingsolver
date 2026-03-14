@@ -50,6 +50,9 @@ $R_m \mid \text{p-batch}, B_i, \text{size}\_j \mid C_{\max}$
 $R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid C_{\max}$
 * MILP, three-index `milp-rank-based-three-index`
 
+$R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid \sum C_j$
+* MILP, three-index `milp-rank-based-three-index`
+
 
 Generate test instances list for each algorithm:
 ```shell
@@ -65,7 +68,19 @@ python scripts/solve_test_data.py  --algorithm milp-rank-based-three-index  --ou
         data/test_makespan_parallel.txt \
         data/test_makespan_parallel_release_dates.txt \
         data/test_makespan_unrelated.txt \
-        data/test_makespan_unrelated_release_dates.txt
+        data/test_makespan_unrelated_release_dates.txt \
+        data/test_tft_single.txt \
+        data/test_tft_single_release_dates.txt \
+        data/test_tft_parallel.txt \
+        data/test_tft_parallel_release_dates.txt \
+        data/test_tft_unrelated.txt \
+        data/test_tft_unrelated_release_dates.txt \
+        data/test_twft_single.txt \
+        data/test_twft_single_release_dates.txt \
+        data/test_twft_parallel.txt \
+        data/test_twft_parallel_release_dates.txt \
+        data/test_twft_unrelated.txt \
+        data/test_twft_unrelated_release_dates.txt
 python scripts/solve_test_data.py  --algorithm milp-rank-based-two-index-no-starts  --output test/algorithms/milp_rank_based_two_index_no_starts_test.txt  --instances \
         data/test_makespan_single.txt \
         data/test_makespan_parallel.txt
