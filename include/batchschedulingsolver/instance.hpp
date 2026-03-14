@@ -69,6 +69,9 @@ struct Job
     /** Processing-time on each machine. */
     std::vector<Time> processing_times;
 
+    /** Largest processing-time across all machines. */
+    Time largest_processing_time = 0;
+
     /** Size. */
     Size size = 1;
 
@@ -108,6 +111,9 @@ public:
 
     /** Get the number of jobs. */
     JobId number_of_jobs() const { return jobs_.size(); }
+
+    /** Get the largest machine capacity. */
+    Size largest_machine_capacity() const { return largest_machine_capacity_; }
 
     /** Return true iff all machines have the same capacity. */
     bool identical_machine_capacities() const { return identical_machine_capacities_; }
@@ -156,6 +162,9 @@ private:
 
     /** Jobs. */
     std::vector<Job> jobs_;
+
+    /** Largest machine capacity. */
+    Size largest_machine_capacity_ = 0;
 
     /** True iff all machines have the same capacity. */
     bool identical_machine_capacities_ = true;
