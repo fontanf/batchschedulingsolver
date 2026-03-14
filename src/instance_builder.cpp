@@ -301,5 +301,35 @@ void InstanceBuilder::read_queiroga2020(std::ifstream& file)
 
 Instance InstanceBuilder::build()
 {
+    if (instance_.number_of_machines() > 0) {
+        Size capacity_0 = instance_.machine(0).capacity;
+        instance_.identical_machine_capacities_ = true;
+        for (MachineId machine_id = 1;
+                machine_id < instance_.number_of_machines();
+                ++machine_id) {
+            if (instance_.machine(machine_id).capacity != capacity_0) {
+                instance_.identical_machine_capacities_ = false;
+                break;
+            }
+        }
+    }
+
+    instance_.machine_independent_processing_times_ = true;
+    for (JobId job_id = 0;
+            job_id < instance_.number_of_jobs();
+            ++job_id) {
+        const Job& job = instance_.job(job_id);
+        for (MachineId machine_id = 1;
+                machine_id < (MachineId)job.processing_times.size();
+                ++machine_id) {
+            if (job.processing_times[machine_id] != job.processing_times[0]) {
+                instance_.machine_independent_processing_times_ = false;
+                break;
+            }
+        }
+        if (!instance_.machine_independent_processing_times_)
+            break;
+    }
+
     return std::move(instance_);
 }

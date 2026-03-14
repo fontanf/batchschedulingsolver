@@ -109,6 +109,15 @@ public:
     /** Get the number of jobs. */
     JobId number_of_jobs() const { return jobs_.size(); }
 
+    /** Return true iff all machines have the same capacity. */
+    bool identical_machine_capacities() const { return identical_machine_capacities_; }
+
+    /**
+     * Return true iff each job's processing time is independent from the
+     * machine, i.e., all machines have the same processing time for each job.
+     */
+    bool machine_independent_processing_times() const { return machine_independent_processing_times_; }
+
     /** Get a job. */
     const Job& job(JobId job_id) const { return jobs_[job_id]; }
 
@@ -147,6 +156,15 @@ private:
 
     /** Jobs. */
     std::vector<Job> jobs_;
+
+    /** True iff all machines have the same capacity. */
+    bool identical_machine_capacities_ = true;
+
+    /**
+     * True iff each job's processing time is independent from the machine,
+     * i.e., all machines have the same processing time for each job.
+     */
+    bool machine_independent_processing_times_ = true;
 
     friend class InstanceBuilder;
 
