@@ -50,7 +50,10 @@ $R_m \mid \text{p-batch}, B_i, \text{size}\_j \mid C_{\max}$
 $R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid C_{\max}$
 * MILP, three-index `milp-rank-based-three-index`
 
-$R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid \sum C_j$
+$R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid \sum w_j C_j$
+* MILP, three-index `milp-rank-based-three-index`
+
+$R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid \sum w_j T_j$
 * MILP, three-index `milp-rank-based-three-index`
 
 
@@ -80,7 +83,19 @@ python scripts/solve_test_data.py  --algorithm milp-rank-based-three-index  --ou
         data/test_twft_parallel.txt \
         data/test_twft_parallel_release_dates.txt \
         data/test_twft_unrelated.txt \
-        data/test_twft_unrelated_release_dates.txt
+        data/test_twft_unrelated_release_dates.txt \
+        data/test_tt_single.txt \
+        data/test_tt_single_release_dates.txt \
+        data/test_tt_parallel.txt \
+        data/test_tt_parallel_release_dates.txt \
+        data/test_tt_unrelated.txt \
+        data/test_tt_unrelated_release_dates.txt \
+        data/test_twt_single.txt \
+        data/test_twt_single_release_dates.txt \
+        data/test_twt_parallel.txt \
+        data/test_twt_parallel_release_dates.txt \
+        data/test_twt_unrelated.txt \
+        data/test_twt_unrelated_release_dates.txt
 python scripts/solve_test_data.py  --algorithm milp-rank-based-two-index-no-starts  --output test/algorithms/milp_rank_based_two_index_no_starts_test.txt  --instances \
         data/test_makespan_single.txt \
         data/test_makespan_parallel.txt

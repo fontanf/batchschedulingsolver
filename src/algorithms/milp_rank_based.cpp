@@ -455,9 +455,16 @@ struct MilpModelThreeIndex
     /**
      * c_j[job_id] = completion time of job job_id.
      *
-     * Only used when the objective is TotalFlowTime.
+     * Only used when the objective is TotalFlowTime or TotalTardiness.
      */
     std::vector<int> c_j;
+
+    /**
+     * t_j[job_id] = tardiness of job job_id.
+     *
+     * Only used when the objective is TotalTardiness.
+     */
+    std::vector<int> t_j;
 
     /** c_max = makespan. Only used when the objective is Makespan. */
     int c_max = -1;
@@ -533,18 +540,36 @@ MilpModelThreeIndex create_milp_model_three_index(
         model.model.objective_coefficients.push_back(1);
     }
 
-    if (instance.objective() == Objective::TotalFlowTime) {
+    if (instance.objective() == Objective::TotalFlowTime
+            || instance.objective() == Objective::TotalTardiness) {
         // Variables c_j[job_id]: completion time of each job.
         model.c_j.resize(instance.number_of_jobs());
         for (JobId job_id = 0; job_id < instance.number_of_jobs(); ++job_id) {
             const Job& job = instance.job(job_id);
             model.c_j[job_id] = model.model.variables_lower_bounds.size();
-            model.model.variables_names.push_back("C_{" + std::to_string(job_id) + "}");
+            model.model.variables_names.push_back("c_{" + std::to_string(job_id) + "}");
             model.model.variables_lower_bounds.push_back(0);
             model.model.variables_upper_bounds.push_back(std::numeric_limits<double>::infinity());
             model.model.variables_types.push_back(mathoptsolverscmake::VariableType::Continuous);
-            model.model.objective_coefficients.push_back(
-                    static_cast<double>(job.weight));
+            if (instance.objective() == Objective::TotalFlowTime) {
+                model.model.objective_coefficients.push_back(static_cast<double>(job.weight));
+            } else if (instance.objective() == Objective::TotalTardiness) {
+                model.model.objective_coefficients.push_back(0.0);
+            }
+        }
+    }
+
+    if (instance.objective() == Objective::TotalTardiness) {
+        // Variables t_j[job_id]: tardiness of each job.
+        model.t_j.resize(instance.number_of_jobs());
+        for (JobId job_id = 0; job_id < instance.number_of_jobs(); ++job_id) {
+            const Job& job = instance.job(job_id);
+            model.t_j[job_id] = model.model.variables_lower_bounds.size();
+            model.model.variables_names.push_back("t_{" + std::to_string(job_id) + "}");
+            model.model.variables_lower_bounds.push_back(0);
+            model.model.variables_upper_bounds.push_back(std::numeric_limits<double>::infinity());
+            model.model.variables_types.push_back(mathoptsolverscmake::VariableType::Continuous);
+            model.model.objective_coefficients.push_back(static_cast<double>(job.weight));
         }
     }
 
@@ -667,7 +692,8 @@ MilpModelThreeIndex create_milp_model_three_index(
     // Completion time constraints:
     //   c_j >= s_ik[i][k] + p_ik[i][k] - BigM * (1 - x_jik[j][i][k])  for all j, i, k.
     //   Rearranged: c_j - s_ik[i][k] - p_ik[i][k] - BigM * x_jik[j][i][k] >= -BigM.
-    if (instance.objective() == Objective::TotalFlowTime) {
+    if (instance.objective() == Objective::TotalFlowTime
+            || instance.objective() == Objective::TotalTardiness) {
         double big_m = 0;
         for (JobId job_id = 0; job_id < instance.number_of_jobs(); ++job_id)
             big_m += instance.job(job_id).largest_processing_time;
@@ -693,6 +719,23 @@ MilpModelThreeIndex create_milp_model_three_index(
                             std::numeric_limits<double>::infinity());
                 }
             }
+        }
+    }
+
+    // Tardiness constraints:
+    //   t_j >= c_j - d_j  for all job_id.
+    //   Rearranged: t_j - c_j >= -d_j.
+    if (instance.objective() == Objective::TotalTardiness) {
+        for (JobId job_id = 0; job_id < instance.number_of_jobs(); ++job_id) {
+            const Job& job = instance.job(job_id);
+            model.model.constraints_starts.push_back(model.model.elements_variables.size());
+            model.model.constraints_names.push_back("tard_{" + std::to_string(job_id) + "}");
+            model.model.elements_variables.push_back(model.t_j[job_id]);
+            model.model.elements_coefficients.push_back(1.0);
+            model.model.elements_variables.push_back(model.c_j[job_id]);
+            model.model.elements_coefficients.push_back(-1.0);
+            model.model.constraints_lower_bounds.push_back(-job.due_date);
+            model.model.constraints_upper_bounds.push_back(std::numeric_limits<double>::infinity());
         }
     }
 
@@ -799,6 +842,9 @@ CbcEventHandler::CbcAction EventHandlerThreeIndex::event(CbcEvent which_event)
     case Objective::TotalFlowTime:
         algorithm_formatter_.update_total_flow_time_bound(bound, "node " + std::to_string(number_of_nodes));
         break;
+    case Objective::TotalTardiness:
+        algorithm_formatter_.update_total_tardiness_bound(bound, "node " + std::to_string(number_of_nodes));
+        break;
     default: break;
     }
 
@@ -843,6 +889,9 @@ void xpress_callback_three_index(
         break;
     case Objective::TotalFlowTime:
         d.algorithm_formatter.update_total_flow_time_bound(bound, "");
+        break;
+    case Objective::TotalTardiness:
+        d.algorithm_formatter.update_total_tardiness_bound(bound, "");
         break;
     default: break;
     }
@@ -922,6 +971,9 @@ Output batchschedulingsolver::milp_rank_based_three_index(
                             case Objective::TotalFlowTime:
                                 algorithm_formatter.update_total_flow_time_bound(bound, "node " + std::to_string(highs_output->mip_node_count));
                                 break;
+                            case Objective::TotalTardiness:
+                                algorithm_formatter.update_total_tardiness_bound(bound, "node " + std::to_string(highs_output->mip_node_count));
+                                break;
                             default: break;
                             }
                         }
@@ -972,6 +1024,9 @@ Output batchschedulingsolver::milp_rank_based_three_index(
         break;
     case Objective::TotalFlowTime:
         algorithm_formatter.update_total_flow_time_bound(bound, "");
+        break;
+    case Objective::TotalTardiness:
+        algorithm_formatter.update_total_tardiness_bound(bound, "");
         break;
     default: break;
     }
@@ -1029,10 +1084,10 @@ ModelTwoIndexNoStarts create_milp_model_two_index_no_starts(
     model.sorted_jobs.resize(instance.number_of_jobs());
     std::iota(model.sorted_jobs.begin(), model.sorted_jobs.end(), 0);
     std::stable_sort(model.sorted_jobs.begin(), model.sorted_jobs.end(),
-            [&](JobId a, JobId b) {
-                const Job& job_a = instance.job(a);
-                const Job& job_b = instance.job(b);
-                return job_a.processing_times[0] < job_b.processing_times[0];
+            [&](JobId job_1_id, JobId job_2_id) {
+                const Job& job_1 = instance.job(job_1_id);
+                const Job& job_2 = instance.job(job_2_id);
+                return job_1.processing_times[0] < job_2.processing_times[0];
             });
 
     // Variables x_jk[job_pos][batch_pos] for job_pos <= batch_pos (lower triangular, -1 elsewhere).
@@ -1525,10 +1580,10 @@ ModelTwoIndex create_milp_model_two_index(
     model.sorted_jobs.resize(instance.number_of_jobs());
     std::iota(model.sorted_jobs.begin(), model.sorted_jobs.end(), 0);
     std::stable_sort(model.sorted_jobs.begin(), model.sorted_jobs.end(),
-            [&](JobId a, JobId b) {
-                const Job& job_a = instance.job(a);
-                const Job& job_b = instance.job(b);
-                return job_a.release_date < job_b.release_date;
+            [&](JobId job_1_id, JobId job_2_id) {
+                const Job& job_1 = instance.job(job_1_id);
+                const Job& job_2 = instance.job(job_2_id);
+                return job_1.release_date < job_2.release_date;
             });
 
     // Variables x_jk[job_pos][batch_pos] for job_pos <= batch_pos (lower triangular, -1 elsewhere).
