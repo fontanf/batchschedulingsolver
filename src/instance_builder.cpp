@@ -298,6 +298,7 @@ void InstanceBuilder::read_queiroga2020(std::ifstream& file)
         set_job_processing_time(job_id, machine_id, processing_time);
         set_job_size(job_id, size);
         set_job_release_date(job_id, release_date);
+        set_job_due_date(job_id, due_date);
         set_job_weight(job_id, weight);
     }
     set_objective(Objective::TotalTardiness);
