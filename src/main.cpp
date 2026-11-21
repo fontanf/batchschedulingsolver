@@ -81,26 +81,36 @@ Output run(
     } else if (algorithm == "milp-rank-based-three-index-no-starts") {
         MilpRankBasedParameters parameters;
         read_args(parameters, vm);
+        if (vm.count("solver"))
+            parameters.solver = vm["solver"].as<mathoptsolverscmake::SolverName>();
         return milp_rank_based_three_index_no_starts(instance, parameters);
 
     } else if (algorithm == "milp-rank-based-three-index") {
         MilpRankBasedParameters parameters;
         read_args(parameters, vm);
+        if (vm.count("solver"))
+            parameters.solver = vm["solver"].as<mathoptsolverscmake::SolverName>();
         return milp_rank_based_three_index(instance, parameters);
 
     } else if (algorithm == "milp-rank-based-two-index-no-starts") {
         MilpRankBasedParameters parameters;
         read_args(parameters, vm);
+        if (vm.count("solver"))
+            parameters.solver = vm["solver"].as<mathoptsolverscmake::SolverName>();
         return milp_rank_based_two_index_no_starts(instance, parameters);
 
     } else if (algorithm == "milp-rank-based-two-index") {
         MilpRankBasedParameters parameters;
         read_args(parameters, vm);
+        if (vm.count("solver"))
+            parameters.solver = vm["solver"].as<mathoptsolverscmake::SolverName>();
         return milp_rank_based_two_index(instance, parameters);
 
     } else if (algorithm == "milp-arc-flow") {
         MilpArcFlowParameters parameters;
         read_args(parameters, vm);
+        if (vm.count("solver"))
+            parameters.solver = vm["solver"].as<mathoptsolverscmake::SolverName>();
         return milp_arc_flow(instance, parameters);
 
     } else {
@@ -134,7 +144,7 @@ int main(int argc, char *argv[])
         ("verbosity-level,v", po::value<int>(), "Verbosity level")
         ("log-to-stderr,w", "Write log in stderr")
 
-        //("solver,", po::value<mathoptsolverscmake::SolverName>(), "set solver")
+        ("solver,", po::value<mathoptsolverscmake::SolverName>(), "set solver")
         ;
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
