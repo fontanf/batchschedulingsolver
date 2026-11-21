@@ -2,6 +2,7 @@
 #include "batchschedulingsolver/instance_builder.hpp"
 #include "batchschedulingsolver/algorithms/greedy_longest_processing_time.hpp"
 #include "batchschedulingsolver/algorithms/milp_rank_based.hpp"
+#include "batchschedulingsolver/algorithms/milp_arc_flow.hpp"
 
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
@@ -96,6 +97,11 @@ Output run(
         MilpRankBasedParameters parameters;
         read_args(parameters, vm);
         return milp_rank_based_two_index(instance, parameters);
+
+    } else if (algorithm == "milp-arc-flow") {
+        MilpArcFlowParameters parameters;
+        read_args(parameters, vm);
+        return milp_arc_flow(instance, parameters);
 
     } else {
         throw std::invalid_argument(

@@ -23,6 +23,7 @@ if(BATCHSCHEDULINGSOLVER_BUILD_MAIN)
         BatchSchedulingSolver_batchschedulingsolver
         BatchSchedulingSolver_greedy_longest_processing_time
         BatchSchedulingSolver_milp_rank_based
+        BatchSchedulingSolver_milp_arc_flow
         Boost::program_options
         Boost::filesystem)
     set_target_properties(BatchSchedulingSolver_main PROPERTIES OUTPUT_NAME "batchschedulingsolver")

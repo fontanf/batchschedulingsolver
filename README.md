@@ -56,6 +56,9 @@ $R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid \sum w_j C_j$
 $R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid \sum w_j T_j$
 * MILP, three-index `milp-rank-based-three-index`
 
+$1 \mid \text{p-batch}, B, \text{size}\_j \mid C_{\max}$
+* MILP, arc-flow `milp-arc-flow`
+
 
 Generate test instances list for each algorithm:
 ```shell
