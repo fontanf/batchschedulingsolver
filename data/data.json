@@ -1,0 +1,22 @@
+{
+    "archives": [
+        {
+            "name": "tests",
+            "url": "https://github.com/fontanf/batchschedulingsolver/releases/download/data-tests-v1/tests.tar.xz",
+            "sha256": "420fe58bceb67b71976321db9459a69604641cfaa59f64c721cd88bebb12483f",
+            "directories": [
+                "tests"
+            ]
+        },
+        {
+            "name": "benchmarks",
+            "url": "https://github.com/fontanf/batchschedulingsolver/releases/download/data-benchmarks-v1/benchmarks.tar.xz",
+            "sha256": "9bccd9be71f68c5a10203777d57ff4eb260a68cc8975fba7b4d660c4e7ca278f",
+            "directories": [
+                "alfieri2021",
+                "chen2011",
+                "queiroga2020"
+            ]
+        }
+    ]
+}
