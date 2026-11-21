@@ -65,6 +65,9 @@ $R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid \sum w_j T_j$
 $1 \mid \text{p-batch}, B, \text{size}\_j \mid C_{\max}$
 * [MILP, arc-flow](doc/milp_arc_flow.md) `milp-arc-flow`
 
+$1$, $P_m \mid \text{p-batch}, B, \text{size}\_j, r_j \mid C_{\max}$, $\sum w_j F_j$, $\sum w_j T_j$ (with or without release dates)
+* [Tree search](doc/tree_search.md) `tree-search` (exact, dynamic programming over the subsets of jobs; beam search on large instances)
+
 
 The tests, and the generation of their reference values, are described in [`doc/tests.md`](doc/tests.md).
 

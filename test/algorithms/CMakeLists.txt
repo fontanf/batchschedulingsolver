@@ -32,3 +32,15 @@ target_link_libraries(BatchSchedulingSolver_milp_rank_based_test
 gtest_discover_tests(BatchSchedulingSolver_milp_rank_based_test
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     PROPERTIES TIMEOUT 3600)
+
+add_executable(BatchSchedulingSolver_tree_search_test)
+target_sources(BatchSchedulingSolver_tree_search_test PRIVATE
+    tree_search_test.txt
+    tree_search_test.cpp)
+target_link_libraries(BatchSchedulingSolver_tree_search_test
+    BatchSchedulingSolver_tests
+    BatchSchedulingSolver_tree_search
+    GTest::gtest_main)
+gtest_discover_tests(BatchSchedulingSolver_tree_search_test
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    PROPERTIES TIMEOUT 3600)

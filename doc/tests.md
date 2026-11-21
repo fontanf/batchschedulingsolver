@@ -105,6 +105,8 @@ python3 scripts/solve_test_data.py --algorithm milp-rank-based-two-index-no-star
     data/test_makespan_parallel.txt
 python3 scripts/solve_test_data.py --algorithm milp-rank-based-two-index --output test/algorithms/milp_rank_based_two_index_test.txt --instances \
     data/test_makespan_{single,parallel}{,_release_dates}.txt
+python3 scripts/solve_test_data.py --criterion objective --output test/algorithms/tree_search_test.txt --instances \
+    data/test_{makespan,tft,twft,tt,twt}_{single,parallel}{,_release_dates}.txt
 ```
 
 The commands need the solver built and installed in `install/` (`cmake --install build --config Release --prefix install`), with HiGHS for the MILP algorithms, except for brute force, which doesn't use the solver.

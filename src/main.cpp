@@ -3,6 +3,7 @@
 #include "batchschedulingsolver/algorithms/greedy_longest_processing_time.hpp"
 #include "batchschedulingsolver/algorithms/milp_rank_based.hpp"
 #include "batchschedulingsolver/algorithms/milp_arc_flow.hpp"
+#include "batchschedulingsolver/algorithms/tree_search.hpp"
 
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
@@ -112,6 +113,11 @@ Output run(
         if (vm.count("solver"))
             parameters.solver = vm["solver"].as<mathoptsolverscmake::SolverName>();
         return milp_arc_flow(instance, parameters);
+
+    } else if (algorithm == "tree-search") {
+        TreeSearchParameters parameters;
+        read_args(parameters, vm);
+        return tree_search(instance, parameters);
 
     } else {
         throw std::invalid_argument(
