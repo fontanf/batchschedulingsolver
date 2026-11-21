@@ -108,11 +108,11 @@ Solution SolutionBuilder::build()
                 if (completion_time > job.due_date) {
                     // Update total tardiness.
                     solution_machine.total_tardiness
-                        += job.weight * (job.due_date - completion_time);
+                        += job.weight * (completion_time - job.due_date);
                     // Update maximum lateness.
                     solution_machine.maximum_lateness = (std::max)(
                             solution_machine.maximum_lateness,
-                            job.due_date - completion_time);
+                            completion_time - job.due_date);
                 }
             }
         }
