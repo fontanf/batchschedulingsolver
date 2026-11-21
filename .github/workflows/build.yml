@@ -1,0 +1,40 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  build:
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.12"]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Download data
+      run: python3 -u scripts/download_data.py --archives tests
+    - name: Build
+      run: |
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBATCHSCHEDULINGSOLVER_USE_HIGHS=ON
+        # Bound the number of jobs: without a value, '--parallel' runs an unlimited
+        # 'make -j', which makes the macOS runners (3 CPUs, 7 GB) swap.
+        cmake --build build --config Release --parallel ${{ runner.os == 'macOS' && 3 || 4 }}
+        cmake --install build --config Release --prefix install
+    - name: Run unit tests
+      run: ctest --test-dir build/test --build-config Release --parallel --output-on-failure
