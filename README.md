@@ -37,6 +37,8 @@ python scripts/visualize.py solution.json
 
 Each algorithm has a page in [`doc/`](doc/) describing it, the problems it supports, its model and its limits.
 
+The algorithms planned next, in particular state-of-the-art ones, are listed in [`doc/roadmap.md`](doc/roadmap.md).
+
 $1 \mid \text{p-batch}, \text{size}\_j \mid C_{\max}$
 * [Greedy, longest processing-time](doc/greedy_longest_processing_time.md) `greedy-longest-processing-time`
 
