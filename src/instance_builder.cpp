@@ -211,7 +211,11 @@ void InstanceBuilder::read_json(std::ifstream& file)
         std::stringstream objective_ss;
         objective_ss << std::string(j["objective"]);
         Objective objective;
-        objective_ss >> objective;
+        if (!(objective_ss >> objective)) {
+            throw std::invalid_argument(
+                    FUNC_SIGNATURE + ": "
+                    "unknown objective \"" + std::string(j["objective"]) + "\".");
+        }
         set_objective(objective);
     }
 

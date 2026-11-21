@@ -7,7 +7,8 @@ std::istream& batchschedulingsolver::operator>>(
         Objective& objective)
 {
     std::string token;
-    in >> token;
+    // Objective names may contain spaces, e.g. "Total flow time".
+    std::getline(in >> std::ws, token);
     if (token == "makespan" || token == "Makespan") {
         objective = Objective::Makespan;
     } else if (token == "total-flow-time"
