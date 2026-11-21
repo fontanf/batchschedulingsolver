@@ -468,6 +468,15 @@ struct MilpModelThreeIndex
 
     /** c_max = makespan. Only used when the objective is Makespan. */
     int c_max = -1;
+
+    /**
+     * Constant to subtract from the MILP objective value to get the value of
+     * the objective of the instance.
+     *
+     * The MILP minimizes sum_j w_j C_j, whereas the total flow time is
+     * sum_j w_j (C_j - r_j).
+     */
+    double objective_offset = 0;
 };
 
 MilpModelThreeIndex create_milp_model_three_index(
@@ -553,6 +562,7 @@ MilpModelThreeIndex create_milp_model_three_index(
             model.model.variables_types.push_back(mathoptsolverscmake::VariableType::Continuous);
             if (instance.objective() == Objective::TotalFlowTime) {
                 model.model.objective_coefficients.push_back(static_cast<double>(job.weight));
+                model.objective_offset += static_cast<double>(job.weight) * job.release_date;
             } else if (instance.objective() == Objective::TotalTardiness) {
                 model.model.objective_coefficients.push_back(0.0);
             }
@@ -826,7 +836,8 @@ CbcEventHandler::CbcAction EventHandlerThreeIndex::event(CbcEvent which_event)
 
     int number_of_nodes = mathoptsolverscmake::get_number_of_nodes(cbc_model);
 
-    double milp_objective_value = mathoptsolverscmake::get_solution_value(cbc_model);
+    double milp_objective_value = mathoptsolverscmake::get_solution_value(cbc_model)
+        - milp_model_.objective_offset;
     if (!output_.solution.feasible()
             || output_.solution.objective_value() > milp_objective_value) {
         std::vector<double> milp_solution = mathoptsolverscmake::get_solution(cbc_model);
@@ -834,7 +845,8 @@ CbcEventHandler::CbcAction EventHandlerThreeIndex::event(CbcEvent which_event)
         algorithm_formatter_.update_solution(solution, "node " + std::to_string(number_of_nodes));
     }
 
-    Time bound = std::ceil(mathoptsolverscmake::get_bound(cbc_model) - 1e-5);
+    Time bound = std::ceil(mathoptsolverscmake::get_bound(cbc_model)
+            - milp_model_.objective_offset - 1e-5);
     switch (instance_.objective()) {
     case Objective::Makespan:
         algorithm_formatter_.update_makespan_bound(bound, "node " + std::to_string(number_of_nodes));
@@ -874,7 +886,8 @@ void xpress_callback_three_index(
 {
     const XpressCallbackUserThreeIndex& d = *(const XpressCallbackUserThreeIndex*)(user);
 
-    double milp_objective_value = mathoptsolverscmake::get_solution_value(xpress_model);
+    double milp_objective_value = mathoptsolverscmake::get_solution_value(xpress_model)
+        - d.milp_model.objective_offset;
     if (!d.output.solution.feasible()
             || d.output.solution.objective_value() > milp_objective_value) {
         std::vector<double> milp_solution = mathoptsolverscmake::get_solution(xpress_model);
@@ -882,7 +895,8 @@ void xpress_callback_three_index(
         d.algorithm_formatter.update_solution(solution, "");
     }
 
-    Time bound = std::ceil(mathoptsolverscmake::get_bound(xpress_model) - 1e-5);
+    Time bound = std::ceil(mathoptsolverscmake::get_bound(xpress_model)
+            - d.milp_model.objective_offset - 1e-5);
     switch (d.instance.objective()) {
     case Objective::Makespan:
         d.algorithm_formatter.update_makespan_bound(bound, "");
@@ -955,14 +969,16 @@ Output batchschedulingsolver::milp_rank_based_three_index(
                     void*)
                 {
                     if (!highs_output->mip_solution.empty()) {
-                        double milp_objective_value = highs_output->mip_primal_bound;
+                        double milp_objective_value = highs_output->mip_primal_bound
+                            - milp_model.objective_offset;
                         if (!output.solution.feasible()
                                 || output.solution.objective_value() > milp_objective_value) {
                             Solution solution = retrieve_solution_three_index(instance, milp_model, highs_output->mip_solution);
                             algorithm_formatter.update_solution(solution, "node " + std::to_string(highs_output->mip_node_count));
                         }
 
-                        Time bound = std::ceil(highs_output->mip_dual_bound - 1e-5);
+                        Time bound = std::ceil(highs_output->mip_dual_bound
+                                - milp_model.objective_offset - 1e-5);
                         if (bound != std::numeric_limits<double>::infinity()) {
                             switch (instance.objective()) {
                             case Objective::Makespan:
@@ -1017,7 +1033,8 @@ Output batchschedulingsolver::milp_rank_based_three_index(
     Solution solution = retrieve_solution_three_index(instance, milp_model, milp_solution);
     algorithm_formatter.update_solution(solution, "");
 
-    Time bound = static_cast<Time>(std::ceil(milp_bound - 1e-5));
+    Time bound = static_cast<Time>(std::ceil(
+                milp_bound - milp_model.objective_offset - 1e-5));
     switch (instance.objective()) {
     case Objective::Makespan:
         algorithm_formatter.update_makespan_bound(bound, "");
