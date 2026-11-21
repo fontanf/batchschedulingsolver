@@ -33,31 +33,33 @@ python scripts/visualize.py solution.json
 
 ## Implemented algorithms
 
+Each algorithm has a page in [`doc/`](doc/) describing it, the problems it supports, its model and its limits.
+
 $1 \mid \text{p-batch}, \text{size}\_j \mid C_{\max}$
-* Greedy, longest processing-time `greedy-longest-processing-time`
+* [Greedy, longest processing-time](doc/greedy_longest_processing_time.md) `greedy-longest-processing-time`
 
 $P_m \mid \text{p-batch}, B_i, \text{size}\_j \mid C_{\max}$
-* MILP, three-index `milp-rank-based-three-index-no-starts`
-* MILP, two-index `milp-rank-based-two-index-no-starts`
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `milp-rank-based-three-index-no-starts`
+* [MILP, two-index](doc/milp_rank_based_two_index.md) `milp-rank-based-two-index-no-starts`
 
 $P_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid C_{\max}$
-* MILP, three-index `milp-rank-based-three-index`
-* MILP, two-index `milp-rank-based-two-index`
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `milp-rank-based-three-index`
+* [MILP, two-index](doc/milp_rank_based_two_index.md) `milp-rank-based-two-index`
 
 $R_m \mid \text{p-batch}, B_i, \text{size}\_j \mid C_{\max}$
-* MILP, three-index `milp-rank-based-three-index-no-starts`
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `milp-rank-based-three-index-no-starts`
 
 $R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid C_{\max}$
-* MILP, three-index `milp-rank-based-three-index`
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `milp-rank-based-three-index`
 
 $R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid \sum w_j C_j$
-* MILP, three-index `milp-rank-based-three-index`
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `milp-rank-based-three-index`
 
 $R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid \sum w_j T_j$
-* MILP, three-index `milp-rank-based-three-index`
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `milp-rank-based-three-index`
 
 $1 \mid \text{p-batch}, B, \text{size}\_j \mid C_{\max}$
-* MILP, arc-flow `milp-arc-flow`
+* [MILP, arc-flow](doc/milp_arc_flow.md) `milp-arc-flow`
 
 
 Generate test instances list for each algorithm:
