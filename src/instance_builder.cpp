@@ -320,6 +320,8 @@ Instance InstanceBuilder::build()
             job_id < instance_.number_of_jobs();
             ++job_id) {
         Job& job = instance_.jobs_[job_id];
+        if (job.release_date > instance_.largest_release_date_)
+            instance_.largest_release_date_ = job.release_date;
         for (MachineId machine_id = 0;
                 machine_id < (MachineId)job.processing_times.size();
                 ++machine_id) {

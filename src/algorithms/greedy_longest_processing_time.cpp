@@ -9,6 +9,22 @@ Output batchschedulingsolver::greedy_longest_processing_time(
     const Instance& instance,
     const Parameters& parameters)
 {
+    if (instance.objective() != Objective::Makespan) {
+        throw std::invalid_argument(
+                FUNC_SIGNATURE + ": "
+                "only the makespan objective is supported.");
+    }
+    if (instance.number_of_machines() != 1) {
+        throw std::invalid_argument(
+                FUNC_SIGNATURE + ": "
+                "only single machine instances are supported.");
+    }
+    if (instance.has_release_dates()) {
+        throw std::invalid_argument(
+                FUNC_SIGNATURE + ": "
+                "release dates are not supported.");
+    }
+
     Output output(instance);
     AlgorithmFormatter algorithm_formatter(instance,parameters,output);
     algorithm_formatter.start("Greedy, longest processing-time");

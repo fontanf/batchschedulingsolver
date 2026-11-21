@@ -314,6 +314,17 @@ Output batchschedulingsolver::milp_rank_based_three_index_no_starts(
         const Instance& instance,
         const MilpRankBasedParameters& parameters)
 {
+    if (instance.objective() != Objective::Makespan) {
+        throw std::invalid_argument(
+                FUNC_SIGNATURE + ": "
+                "only the makespan objective is supported.");
+    }
+    if (instance.has_release_dates()) {
+        throw std::invalid_argument(
+                FUNC_SIGNATURE + ": "
+                "release dates are not supported.");
+    }
+
     Output output(instance);
     AlgorithmFormatter algorithm_formatter(instance, parameters, output);
     algorithm_formatter.start("Rank-based MILP (three-index, no starts)");
@@ -929,6 +940,14 @@ Output batchschedulingsolver::milp_rank_based_three_index(
         const Instance& instance,
         const MilpRankBasedParameters& parameters)
 {
+    if (instance.objective() != Objective::Makespan
+            && instance.objective() != Objective::TotalFlowTime
+            && instance.objective() != Objective::TotalTardiness) {
+        throw std::invalid_argument(
+                FUNC_SIGNATURE + ": "
+                "only the makespan, total flow time and total tardiness objectives are supported.");
+    }
+
     Output output(instance);
     AlgorithmFormatter algorithm_formatter(instance, parameters, output);
     algorithm_formatter.start("Rank-based MILP (three-index)");
@@ -1441,6 +1460,22 @@ Output batchschedulingsolver::milp_rank_based_two_index_no_starts(
         const Instance& instance,
         const MilpRankBasedParameters& parameters)
 {
+    if (instance.objective() != Objective::Makespan) {
+        throw std::invalid_argument(
+                FUNC_SIGNATURE + ": "
+                "only the makespan objective is supported.");
+    }
+    if (instance.has_release_dates()) {
+        throw std::invalid_argument(
+                FUNC_SIGNATURE + ": "
+                "release dates are not supported.");
+    }
+    if (!instance.machine_independent_processing_times()) {
+        throw std::invalid_argument(
+                FUNC_SIGNATURE + ": "
+                "machine-dependent processing times are not supported.");
+    }
+
     Output output(instance);
     AlgorithmFormatter algorithm_formatter(instance, parameters, output);
     algorithm_formatter.start("Rank-based MILP (two index, no starts)");
@@ -2030,6 +2065,17 @@ Output batchschedulingsolver::milp_rank_based_two_index(
         const Instance& instance,
         const MilpRankBasedParameters& parameters)
 {
+    if (instance.objective() != Objective::Makespan) {
+        throw std::invalid_argument(
+                FUNC_SIGNATURE + ": "
+                "only the makespan objective is supported.");
+    }
+    if (!instance.machine_independent_processing_times()) {
+        throw std::invalid_argument(
+                FUNC_SIGNATURE + ": "
+                "machine-dependent processing times are not supported.");
+    }
+
     Output output(instance);
     AlgorithmFormatter algorithm_formatter(instance, parameters, output);
     algorithm_formatter.start("Rank-based MILP (two-index)");

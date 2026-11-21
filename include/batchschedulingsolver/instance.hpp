@@ -124,6 +124,12 @@ public:
      */
     bool machine_independent_processing_times() const { return machine_independent_processing_times_; }
 
+    /** Get the largest release date. */
+    Time largest_release_date() const { return largest_release_date_; }
+
+    /** Return true iff at least one job has a non-zero release date. */
+    bool has_release_dates() const { return largest_release_date_ > 0; }
+
     /** Get a job. */
     const Job& job(JobId job_id) const { return jobs_[job_id]; }
 
@@ -174,6 +180,9 @@ private:
      * i.e., all machines have the same processing time for each job.
      */
     bool machine_independent_processing_times_ = true;
+
+    /** Largest release date. */
+    Time largest_release_date_ = 0;
 
     friend class InstanceBuilder;
 
