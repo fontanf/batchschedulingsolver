@@ -16,3 +16,13 @@ target_link_libraries(BatchSchedulingSolver_milp_rank_based PUBLIC
     BatchSchedulingSolver_batchschedulingsolver
     MathOptSolversCMake::milp)
 add_library(BatchSchedulingSolver::milp_rank_based ALIAS BatchSchedulingSolver_milp_rank_based)
+
+add_library(BatchSchedulingSolver_milp_arc_flow)
+target_sources(BatchSchedulingSolver_milp_arc_flow PRIVATE
+    milp_arc_flow.cpp)
+target_include_directories(BatchSchedulingSolver_milp_arc_flow PUBLIC
+    ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(BatchSchedulingSolver_milp_arc_flow PUBLIC
+    BatchSchedulingSolver_batchschedulingsolver
+    MathOptSolversCMake::milp)
+add_library(BatchSchedulingSolver::milp_arc_flow ALIAS BatchSchedulingSolver_milp_arc_flow)
