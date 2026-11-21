@@ -5,6 +5,8 @@
 
 #include <boost/filesystem.hpp>
 
+#include <sstream>
+
 using namespace batchschedulingsolver;
 
 namespace fs = boost::filesystem;
@@ -32,9 +34,18 @@ std::vector<TestInstancePath> batchschedulingsolver::get_test_instance_paths(
     std::vector<TestInstancePath> output;
     std::string tmp;
     while (getline(file, tmp)) {
+        if (tmp.empty())
+            continue;
+        // Each line is either '<instance path>' (the reference is the
+        // solution of the certificate '<instance path>_solution.json') or
+        // '<instance path> <value>'.
         TestInstancePath test_instance_path;
-        test_instance_path.instance_path = tmp;
-        test_instance_path.certificate_path = tmp + "_solution.json";
+        std::istringstream iss(tmp);
+        iss >> test_instance_path.instance_path;
+        double value;
+        if (iss >> value)
+            test_instance_path.value = value;
+        test_instance_path.certificate_path = test_instance_path.instance_path + "_solution.json";
         output.push_back(test_instance_path);
     }
     return output;

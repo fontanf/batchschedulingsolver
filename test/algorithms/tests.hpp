@@ -15,6 +15,13 @@ struct TestInstancePath
     std::string instance_format;
     std::string certificate_path;
     std::string certificate_format;
+
+    /**
+     * Reference value, if given in the instance list ('<instance path>
+     * <value>'); -1 otherwise, in which case the reference is the solution of
+     * the certificate.
+     */
+    double value = -1;
 };
 
 std::vector<TestInstancePath> get_test_instance_paths(
