@@ -694,7 +694,14 @@ MilpModelThreeIndex create_milp_model_three_index(
     //   Rearranged: c_j - s_ik[i][k] - p_ik[i][k] - BigM * x_jik[j][i][k] >= -BigM.
     if (instance.objective() == Objective::TotalFlowTime
             || instance.objective() == Objective::TotalTardiness) {
+        // BigM must be at least the largest completion time of a slot in a
+        // semi-active schedule, which is bounded by the largest release date
+        // plus the sum of the processing times.
         double big_m = 0;
+        for (JobId job_id = 0; job_id < instance.number_of_jobs(); ++job_id) {
+            const Job& job = instance.job(job_id);
+            big_m = (std::max)(big_m, static_cast<double>(job.release_date));
+        }
         for (JobId job_id = 0; job_id < instance.number_of_jobs(); ++job_id)
             big_m += instance.job(job_id).largest_processing_time;
         for (JobId job_id = 0; job_id < instance.number_of_jobs(); ++job_id) {
