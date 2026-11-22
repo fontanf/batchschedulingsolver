@@ -84,6 +84,10 @@ FetchContent_Declare(
     #SOURCE_DIR "${PROJECT_SOURCE_DIR}/../columngenerationsolver/"
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(columngenerationsolver)
+# columngenerationsolver sets CMAKE_MSVC_RUNTIME_LIBRARY to the static
+# runtime in its own CMakeLists.txt; use the runtime of this project.
+set_target_properties(ColumnGenerationSolver_columngenerationsolver PROPERTIES
+    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 
 # Fetch fontanf/localsearchsolver.
 set(LOCALSEARCHSOLVER_BUILD_TEST OFF)
