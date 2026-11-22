@@ -26,3 +26,22 @@ target_link_libraries(BatchSchedulingSolver_milp_arc_flow PUBLIC
     BatchSchedulingSolver_batchschedulingsolver
     MathOptSolversCMake::milp)
 add_library(BatchSchedulingSolver::milp_arc_flow ALIAS BatchSchedulingSolver_milp_arc_flow)
+
+add_library(BatchSchedulingSolver_brute_force)
+target_sources(BatchSchedulingSolver_brute_force PRIVATE
+    brute_force.cpp)
+target_include_directories(BatchSchedulingSolver_brute_force PUBLIC
+    ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(BatchSchedulingSolver_brute_force PUBLIC
+    BatchSchedulingSolver_batchschedulingsolver)
+add_library(BatchSchedulingSolver::brute_force ALIAS BatchSchedulingSolver_brute_force)
+
+add_library(BatchSchedulingSolver_tree_search)
+target_sources(BatchSchedulingSolver_tree_search PRIVATE
+    tree_search.cpp)
+target_include_directories(BatchSchedulingSolver_tree_search PUBLIC
+    ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(BatchSchedulingSolver_tree_search PUBLIC
+    BatchSchedulingSolver_batchschedulingsolver
+    TreeSearchSolver::treesearchsolver)
+add_library(BatchSchedulingSolver::tree_search ALIAS BatchSchedulingSolver_tree_search)
