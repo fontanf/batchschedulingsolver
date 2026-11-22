@@ -61,6 +61,9 @@ $1 \mid \text{p-batch}, B, \text{size}\_j, r_j \mid C_{\max}$
 * [Tree search](doc/tree_search.md) `--algorithm tree-search` (exact; beam search on large instances)
 * [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
 
+$1 \mid \text{p-batch}, B, \text{size}\_j, r_j, \text{incompatible} \mid C_{\max}$
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
 #### Objective total flow time
 
 $1 \mid \text{p-batch}, B, \text{size}\_j \mid \sum C_j$
@@ -73,7 +76,15 @@ $1 \mid \text{p-batch}, B, \text{size}\_j \mid \sum w_j C_j$
 * [Tree search](doc/tree_search.md) `--algorithm tree-search` (exact; beam search on large instances)
 * [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
 
+$1 \mid \text{p-batch}, B, \text{size}\_j, r_j \mid \sum w_j C_j$
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
+* [Tree search](doc/tree_search.md) `--algorithm tree-search` (exact; beam search on large instances)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
 $1 \mid \text{p-batch}, B, \text{size}\_j, \text{incompatible} \mid \sum w_j C_j$
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+$1 \mid \text{p-batch}, B, \text{size}\_j, r_j, \text{incompatible} \mid \sum w_j C_j$
 * [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
 
 #### Objective total tardiness
@@ -81,6 +92,14 @@ $1 \mid \text{p-batch}, B, \text{size}\_j, \text{incompatible} \mid \sum w_j C_j
 $1 \mid \text{p-batch}, B, \text{size}\_j, r_j \mid \sum w_j T_j$
 * [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
 * [Tree search](doc/tree_search.md) `--algorithm tree-search` (exact; beam search on large instances)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+$1 \mid \text{p-batch}, B, \text{size}\_j, r_j, \text{incompatible} \mid \sum w_j T_j$
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+#### Objective maximum lateness
+
+$1 \mid \text{p-batch}, B, \text{size}\_j, r_j, \text{incompatible} \mid L_{\max}$
 * [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
 
 ### Parallel machines
@@ -93,8 +112,32 @@ $P_m \mid \text{p-batch}, B, \text{size}\_j \mid C_{\max}$
 * [Tree search](doc/tree_search.md) `--algorithm tree-search` (exact; beam search on large instances)
 * [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
 
+$P_m \mid \text{p-batch}, B, \text{size}\_j, r_j \mid C_{\max}$
+* [MILP, two-index](doc/milp_rank_based_two_index.md) `--algorithm milp-rank-based-two-index` (exact)
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
+* [Tree search](doc/tree_search.md) `--algorithm tree-search` (exact; beam search on large instances)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+$P_m \mid \text{p-batch}, B_i, \text{size}\_j \mid C_{\max}$
+* [MILP, two-index](doc/milp_rank_based_two_index.md) `--algorithm milp-rank-based-two-index-no-starts` (exact)
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index-no-starts` (exact)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+$P_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid C_{\max}$
+* [MILP, two-index](doc/milp_rank_based_two_index.md) `--algorithm milp-rank-based-two-index` (exact)
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+$R_m \mid \text{p-batch}, B_i, \text{size}\_j \mid C_{\max}$
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index-no-starts` (exact)
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
 $R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid C_{\max}$
 * [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+$R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j, \text{incompatible} \mid C_{\max}$
 * [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
 
 #### Objective total flow time
@@ -109,6 +152,11 @@ $P_m \mid \text{p-batch}, B, \text{size}\_j, r_j \mid \sum C_j$
 * [Tree search](doc/tree_search.md) `--algorithm tree-search` (exact; beam search on large instances)
 * [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
 
+$P_m \mid \text{p-batch}, B, \text{size}\_j, r_j \mid \sum w_j C_j$
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
+* [Tree search](doc/tree_search.md) `--algorithm tree-search` (exact; beam search on large instances)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
 $P_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid \sum C_j$
 * [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
 * [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
@@ -117,9 +165,25 @@ $P_m \mid \text{p-batch}, B_i, \text{size}\_j \mid \sum w_j C_j$
 * [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
 * [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
 
+$R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid \sum w_j C_j$
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+$R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j, \text{incompatible} \mid \sum w_j C_j$
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
 #### Objective total tardiness
 
+$P_m \mid \text{p-batch}, B, \text{size}\_j, r_j \mid \sum w_j T_j$
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
+* [Tree search](doc/tree_search.md) `--algorithm tree-search` (exact; beam search on large instances)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
 $P_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid \sum w_j T_j$
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+$R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid \sum w_j T_j$
 * [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
 * [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
 
@@ -127,6 +191,14 @@ $P_m \mid \text{p-batch}, \text{incompatible} \mid \sum w_j T_j$
 * [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
 
 $P_m \mid \text{p-batch}, \text{incompatible}, r_j \mid \sum w_j T_j$
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+$R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j, \text{incompatible} \mid \sum w_j T_j$
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+#### Objective maximum lateness
+
+$R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j, \text{incompatible} \mid L_{\max}$
 * [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
 
 The tests, and the generation of the optimal solutions of the test instances, are described in [`doc/tests.md`](doc/tests.md).
