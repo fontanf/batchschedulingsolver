@@ -2,8 +2,8 @@
     "archives": [
         {
             "name": "tests",
-            "url": "https://github.com/fontanf/batchschedulingsolver/releases/download/data-tests-v1/tests.tar.xz",
-            "sha256": "420fe58bceb67b71976321db9459a69604641cfaa59f64c721cd88bebb12483f",
+            "url": "https://github.com/fontanf/batchschedulingsolver/releases/download/data-tests-v2/tests.tar.xz",
+            "sha256": "ff72f18e0e50a99eba6ce3817748d22e0d5f3f7dfaf5e60b48d9b79fe5a365c4",
             "directories": [
                 "tests"
             ]
