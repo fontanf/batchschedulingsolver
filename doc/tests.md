@@ -81,6 +81,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 Use them only for algorithms that are optimal on the listed instances: exact algorithms, and the other algorithms on the special cases where they are optimal (e.g. LPT on one machine with identical sizes).
 
+A heuristic that doesn't prove optimality can't generate its own list with `scripts/solve_test_data.py`. If it finds the optimal solutions of small instances, test it on the list of another algorithm, with a fixed seed and a fixed number of iterations so that the test is deterministic: the local search is tested on `test/algorithms/brute_force_test.txt`.
+
 ## Optimal solutions
 
 The optimal solutions of the test instances are stored with the instances, in the `tests` archive, as certificates `data/<instance path>_solution.json`. They are computed by `scripts/solve_test_data.py`: it runs an algorithm on the instances of the lists given with `--instances`, with a time limit (`--time-limit`, 1 s by default), and writes the instances solved to optimality (`"Optimal": true`) to the list given with `--output`. For each of these instances:

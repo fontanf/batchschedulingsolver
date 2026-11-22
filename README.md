@@ -71,6 +71,9 @@ $1$, $P_m$, $R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j, \text{incompatib
 $1$, $P_m \mid \text{p-batch}, B, \text{size}\_j, r_j \mid C_{\max}$, $\sum w_j F_j$, $\sum w_j T_j$ (with or without release dates)
 * [Tree search](doc/tree_search.md) `tree-search` (exact, dynamic programming over the subsets of jobs; beam search on large instances)
 
+$1$, $P_m$, $R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j, \text{incompatible families} \mid C_{\max}$, $\sum w_j F_j$, $\sum w_j T_j$, $L_{\max}$
+* [Local search](doc/local_search.md) `local-search` (heuristic, population-based iterated local search)
+
 
 The tests, and the generation of the optimal solutions of the test instances, are described in [`doc/tests.md`](doc/tests.md).
 
