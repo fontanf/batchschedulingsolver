@@ -23,6 +23,8 @@ python scripts/download_data.py
 
 The data archives are published as GitHub releases and pinned in `data/data.json` (URL and SHA-256 checksum), so each version of the repository downloads the data it has been tested with. Use `--archives tests` to only download the instances used by the unit tests. To publish a new version of an archive, see `scripts/create_data_archives.py`.
 
+The benchmark instances of the literature (where they come from, the problems they were designed for, how they were generated, their format and reference values) are described in [`doc/benchmarks.md`](doc/benchmarks.md).
+
 Run
 ```shell
 ./install/bin/batchschedulingsolver  --verbosity-level 1  --input ./data/alfieri2021/inst_10_1_1.dat --format alfieri2021  --algorithm greedy-longest-processing-time  --certificate solution.json
