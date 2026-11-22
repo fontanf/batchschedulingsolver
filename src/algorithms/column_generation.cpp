@@ -101,10 +101,12 @@ public:
     PricingSolver(
             const Instance& instance,
             Weight total_weight,
-            int64_t maximum_number_of_columns):
+            int64_t maximum_number_of_columns,
+            bool source_first_branching):
         instance_(instance),
         total_weight_(total_weight),
-        maximum_number_of_columns_(maximum_number_of_columns)
+        maximum_number_of_columns_(maximum_number_of_columns),
+        source_first_branching_(source_first_branching)
     {
         // Group the jobs by family, sorted by non-increasing processing time.
         std::vector<FamilyId> families;
@@ -224,6 +226,9 @@ private:
     /** Maximum number of columns returned by a call to the pricing. */
     int64_t maximum_number_of_columns_;
 
+    /** Branching priority of an arc: minus its start node. */
+    bool source_first_branching_;
+
     /** For each family, its jobs sorted by non-increasing processing time. */
     std::vector<std::vector<JobId>> family_jobs_;
 
@@ -269,6 +274,8 @@ std::shared_ptr<const cgs::Column> PricingSolver::build_column(
         column->elements.push_back({flow_row(end), -1.0});
     for (JobId job_id: info->jobs)
         column->elements.push_back({job_row(job_id), 1.0});
+    if (source_first_branching_)
+        column->branching_priority = -(double)start;
     column->extra = info;
     return column;
 }
@@ -769,7 +776,8 @@ const ColumnGenerationOutput batchschedulingsolver::column_generation(
     PricingSolver* pricing_solver = new PricingSolver(
             instance,
             total_weight,
-            parameters.maximum_number_of_columns_per_pricing);
+            parameters.maximum_number_of_columns_per_pricing,
+            parameters.source_first_branching);
     model.pricing_solver = std::unique_ptr<cgs::PricingSolver>(pricing_solver);
 
     // Initial columns: the arcs of the initial solution.
