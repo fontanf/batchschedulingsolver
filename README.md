@@ -39,41 +39,95 @@ Each algorithm has a page in [`doc/`](doc/) describing it, the problems it suppo
 
 The algorithms planned next, in particular state-of-the-art ones, are listed in [`doc/roadmap.md`](doc/roadmap.md).
 
-$1 \mid \text{p-batch}, \text{size}\_j \mid C_{\max}$
-* [Greedy, longest processing-time](doc/greedy_longest_processing_time.md) `greedy-longest-processing-time`
+### All problems
 
-$P_m \mid \text{p-batch}, B_i, \text{size}\_j \mid C_{\max}$
-* [MILP, three-index](doc/milp_rank_based_three_index.md) `milp-rank-based-three-index-no-starts`
-* [MILP, two-index](doc/milp_rank_based_two_index.md) `milp-rank-based-two-index-no-starts`
+* [Brute force](doc/brute_force.md) `--algorithm brute-force` (exact, small instances only; gives the optimal solutions of the tests)
 
-$P_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid C_{\max}$
-* [MILP, three-index](doc/milp_rank_based_three_index.md) `milp-rank-based-three-index`
-* [MILP, two-index](doc/milp_rank_based_two_index.md) `milp-rank-based-two-index`
+### Single machine
 
-$R_m \mid \text{p-batch}, B_i, \text{size}\_j \mid C_{\max}$
-* [MILP, three-index](doc/milp_rank_based_three_index.md) `milp-rank-based-three-index-no-starts`
-
-$R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid C_{\max}$
-* [MILP, three-index](doc/milp_rank_based_three_index.md) `milp-rank-based-three-index`
-
-$R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid \sum w_j C_j$
-* [MILP, three-index](doc/milp_rank_based_three_index.md) `milp-rank-based-three-index`
-
-$R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid \sum w_j T_j$
-* [MILP, three-index](doc/milp_rank_based_three_index.md) `milp-rank-based-three-index`
+#### Objective makespan
 
 $1 \mid \text{p-batch}, B, \text{size}\_j \mid C_{\max}$
-* [MILP, arc-flow](doc/milp_arc_flow.md) `milp-arc-flow`
+* [Greedy, longest processing-time](doc/greedy_longest_processing_time.md) `--algorithm greedy-longest-processing-time` (heuristic, optimal with identical sizes)
+* [MILP, arc-flow](doc/milp_arc_flow.md) `--algorithm milp-arc-flow` (exact)
+* [MILP, two-index](doc/milp_rank_based_two_index.md) `--algorithm milp-rank-based-two-index-no-starts` (exact)
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index-no-starts` (exact)
+* [Tree search](doc/tree_search.md) `--algorithm tree-search` (exact; beam search on large instances)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
 
-$1$, $P_m$, $R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j, \text{incompatible families} \mid C_{\max}$, $\sum w_j F_j$, $\sum w_j T_j$, $L_{\max}$ (small instances)
-* [Brute force](doc/brute_force.md) `brute-force` (exact, enumerates all the schedules; reference for the other algorithms)
+$1 \mid \text{p-batch}, B, \text{size}\_j, r_j \mid C_{\max}$
+* [MILP, two-index](doc/milp_rank_based_two_index.md) `--algorithm milp-rank-based-two-index` (exact)
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
+* [Tree search](doc/tree_search.md) `--algorithm tree-search` (exact; beam search on large instances)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
 
-$1$, $P_m \mid \text{p-batch}, B, \text{size}\_j, r_j \mid C_{\max}$, $\sum w_j F_j$, $\sum w_j T_j$ (with or without release dates)
-* [Tree search](doc/tree_search.md) `tree-search` (exact, dynamic programming over the subsets of jobs; beam search on large instances)
+#### Objective total flow time
 
-$1$, $P_m$, $R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j, \text{incompatible families} \mid C_{\max}$, $\sum w_j F_j$, $\sum w_j T_j$, $L_{\max}$
-* [Local search](doc/local_search.md) `local-search` (heuristic, population-based iterated local search)
+$1 \mid \text{p-batch}, B, \text{size}\_j \mid \sum C_j$
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
+* [Tree search](doc/tree_search.md) `--algorithm tree-search` (exact; beam search on large instances)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
 
+$1 \mid \text{p-batch}, B, \text{size}\_j \mid \sum w_j C_j$
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
+* [Tree search](doc/tree_search.md) `--algorithm tree-search` (exact; beam search on large instances)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+$1 \mid \text{p-batch}, B, \text{size}\_j, \text{incompatible} \mid \sum w_j C_j$
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+#### Objective total tardiness
+
+$1 \mid \text{p-batch}, B, \text{size}\_j, r_j \mid \sum w_j T_j$
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
+* [Tree search](doc/tree_search.md) `--algorithm tree-search` (exact; beam search on large instances)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+### Parallel machines
+
+#### Objective makespan
+
+$P_m \mid \text{p-batch}, B, \text{size}\_j \mid C_{\max}$
+* [MILP, two-index](doc/milp_rank_based_two_index.md) `--algorithm milp-rank-based-two-index-no-starts` (exact)
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index-no-starts` (exact)
+* [Tree search](doc/tree_search.md) `--algorithm tree-search` (exact; beam search on large instances)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+$R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid C_{\max}$
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+#### Objective total flow time
+
+$P_m \mid \text{p-batch}, B, \text{size}\_j \mid \sum C_j$
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
+* [Tree search](doc/tree_search.md) `--algorithm tree-search` (exact; beam search on large instances)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+$P_m \mid \text{p-batch}, B, \text{size}\_j, r_j \mid \sum C_j$
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
+* [Tree search](doc/tree_search.md) `--algorithm tree-search` (exact; beam search on large instances)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+$P_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid \sum C_j$
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+$P_m \mid \text{p-batch}, B_i, \text{size}\_j \mid \sum w_j C_j$
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+#### Objective total tardiness
+
+$P_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid \sum w_j T_j$
+* [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+$P_m \mid \text{p-batch}, \text{incompatible} \mid \sum w_j T_j$
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
+
+$P_m \mid \text{p-batch}, \text{incompatible}, r_j \mid \sum w_j T_j$
+* [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
 
 The tests, and the generation of the optimal solutions of the test instances, are described in [`doc/tests.md`](doc/tests.md).
 
