@@ -67,3 +67,15 @@ target_link_libraries(BatchSchedulingSolver_local_search_test
 gtest_discover_tests(BatchSchedulingSolver_local_search_test
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     PROPERTIES TIMEOUT 3600)
+
+add_executable(BatchSchedulingSolver_column_generation_test)
+target_sources(BatchSchedulingSolver_column_generation_test PRIVATE
+    column_generation_test.txt
+    column_generation_test.cpp)
+target_link_libraries(BatchSchedulingSolver_column_generation_test
+    BatchSchedulingSolver_tests
+    BatchSchedulingSolver_column_generation
+    GTest::gtest_main)
+gtest_discover_tests(BatchSchedulingSolver_column_generation_test
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    PROPERTIES TIMEOUT 3600)

@@ -65,6 +65,26 @@ FetchContent_Declare(
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(treesearchsolver)
 
+# Fetch fontanf/columngenerationsolver.
+set(COLUMNGENERATIONSOLVER_BUILD_TEST OFF)
+set(COLUMNGENERATIONSOLVER_BUILD_EXAMPLES OFF)
+if(BATCHSCHEDULINGSOLVER_USE_CLP OR BATCHSCHEDULINGSOLVER_USE_CBC)
+    set(COLUMNGENERATIONSOLVER_USE_CLP ON)
+endif()
+if(BATCHSCHEDULINGSOLVER_USE_HIGHS)
+    set(COLUMNGENERATIONSOLVER_USE_HIGHS ON)
+endif()
+if(BATCHSCHEDULINGSOLVER_USE_XPRESS)
+    set(COLUMNGENERATIONSOLVER_USE_XPRESS ON)
+endif()
+FetchContent_Declare(
+    columngenerationsolver
+    GIT_REPOSITORY https://github.com/fontanf/columngenerationsolver.git
+    GIT_TAG c7073b643271623b52dfc8af7c91b47f2ab16b1a
+    #SOURCE_DIR "${PROJECT_SOURCE_DIR}/../columngenerationsolver/"
+    EXCLUDE_FROM_ALL)
+FetchContent_MakeAvailable(columngenerationsolver)
+
 # Fetch fontanf/localsearchsolver.
 set(LOCALSEARCHSOLVER_BUILD_TEST OFF)
 set(LOCALSEARCHSOLVER_BUILD_EXAMPLES OFF)

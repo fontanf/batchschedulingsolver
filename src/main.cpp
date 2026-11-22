@@ -6,6 +6,7 @@
 #include "batchschedulingsolver/algorithms/brute_force.hpp"
 #include "batchschedulingsolver/algorithms/tree_search.hpp"
 #include "batchschedulingsolver/algorithms/local_search.hpp"
+#include "batchschedulingsolver/algorithms/column_generation.hpp"
 
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
@@ -127,6 +128,13 @@ Output run(
         if (vm.count("maximum-number-of-iterations"))
             parameters.maximum_number_of_iterations = vm["maximum-number-of-iterations"].as<int64_t>();
         return local_search(instance, generator, nullptr, parameters);
+
+    } else if (algorithm == "column-generation") {
+        ColumnGenerationParameters parameters;
+        read_args(parameters, vm);
+        if (vm.count("solver"))
+            parameters.solver = vm["solver"].as<mathoptsolverscmake::SolverName>();
+        return column_generation(instance, parameters);
 
     } else if (algorithm == "tree-search") {
         TreeSearchParameters parameters;
