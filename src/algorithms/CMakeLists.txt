@@ -45,3 +45,13 @@ target_link_libraries(BatchSchedulingSolver_tree_search PUBLIC
     BatchSchedulingSolver_batchschedulingsolver
     TreeSearchSolver::treesearchsolver)
 add_library(BatchSchedulingSolver::tree_search ALIAS BatchSchedulingSolver_tree_search)
+
+add_library(BatchSchedulingSolver_local_search)
+target_sources(BatchSchedulingSolver_local_search PRIVATE
+    local_search.cpp)
+target_include_directories(BatchSchedulingSolver_local_search PUBLIC
+    ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(BatchSchedulingSolver_local_search PUBLIC
+    BatchSchedulingSolver_batchschedulingsolver
+    LocalSearchSolver::localsearchsolver)
+add_library(BatchSchedulingSolver::local_search ALIAS BatchSchedulingSolver_local_search)

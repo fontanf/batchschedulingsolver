@@ -95,8 +95,10 @@ $P_m \mid \text{p-batch}, B_i, \text{size}\_j \mid \sum w_j C_j$
 ## Total weighted tardiness
 
 $1 \mid \text{p-batch}, B, \text{size}\_j, r_j \mid \sum w_j T_j$
-* **Planned**: E. Queiroga, R. G. S. Pinheiro, Q. Christ, A. Subramanian and A. A. Pessoa (2020). Iterated local search for single machine total weighted tardiness batch scheduling. *Journal of Heuristics*. [doi:10.1007/s10732-020-09461-x](https://doi.org/10.1007/s10732-020-09461-x)
+* **Done**: E. Queiroga, R. G. S. Pinheiro, Q. Christ, A. Subramanian and A. A. Pessoa (2020). Iterated local search for single machine total weighted tardiness batch scheduling. *Journal of Heuristics*. [doi:10.1007/s10732-020-09461-x](https://doi.org/10.1007/s10732-020-09461-x)
   * Iterated local search with five neighborhoods and their efficient evaluation; pseudo-polynomial dynamic programming for the optimal batching of a fixed sequence.
+  * Done: the neighborhoods, the perturbations and the constructive heuristic, within the population-based framework of Medeiros et al. (2024), `--algorithm local-search`, generalized to unrelated machines, machine-dependent capacities, families and the other objectives. See [`local_search.md`](local_search.md).
+  * Missing: the dynamic programming for the optimal batching of a fixed sequence.
   * Benchmark: the instances of the paper, with optimal solutions for some of them, in `data/queiroga2020` (`--format queiroga2020`).
 * **Suggested**: A. A. Pessoa, T. Bulhões, V. Nesello and A. Subramanian (2022). Exact approaches for single machine total weighted tardiness batch scheduling. *INFORMS Journal on Computing*. [doi:10.1287/ijoc.2021.1133](https://doi.org/10.1287/ijoc.2021.1133)
   * Time-indexed formulation (TIF), which already outperforms the rank-based formulation, and time-size-indexed formulation (TSIF) solved by column generation, with a bucket graph labeling algorithm and ng-sets for the pricing: the state-of-the-art exact method.
@@ -108,11 +110,13 @@ $P_m$, $R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid \sum w_j T_j$
 
 ## Incompatible job families
 
-The instances have families (`family_id`), but only the brute force supports incompatible families (a batch can only contain jobs of the same family).
+The instances have families (`family_id`), but only the brute force and the local search support incompatible families (a batch can only contain jobs of the same family).
 
 * **Suggested**: F. Yang, M. Davari, W. Wei, B. Hermans and R. Leus (2022). Scheduling a single parallel-batching machine with non-identical job sizes and incompatible job families. *European Journal of Operational Research*. [doi:10.1016/j.ejor.2022.03.027](https://doi.org/10.1016/j.ejor.2022.03.027)
   * $1 \mid \text{p-batch}, B, \text{size}\_j, \text{incompatible} \mid \sum w_j C_j$: assignment-based, time-indexed and set-partitioning formulations, branch-and-price and a column-generation-based heuristic.
-* **Suggested**: J. M. F. Medeiros, A. Subramanian and E. Queiroga (2024). Population-based iterated local search for batch scheduling on parallel machines with incompatible job families, release dates, and tardiness penalties. *Optimization Letters*. [doi:10.1007/s11590-024-02116-x](https://doi.org/10.1007/s11590-024-02116-x)
+* **Done**: J. M. F. Medeiros, A. Subramanian and E. Queiroga (2024). Population-based iterated local search for batch scheduling on parallel machines with incompatible job families, release dates, and tardiness penalties. *Optimization Letters*. [doi:10.1007/s11590-024-02116-x](https://doi.org/10.1007/s11590-024-02116-x)
   * $P_m \mid \text{p-batch}, \text{incompatible}, r_j \mid \sum w_j T_j$: population-based ILS, close to the one of shopschedulingsolver.
+  * Done: `--algorithm local-search`, see above.
+  * Missing: the time window decomposition heuristic used for the initial solutions (ATC and BATC-II rules), and the benchmark of the paper (Chiang et al., 2010; not in `data/`).
 * **Suggested**: C. Almeder and L. Mönch (2011). Metaheuristics for scheduling jobs with incompatible families on parallel batching machines. *Journal of the Operational Research Society*, 62(12), 2083–2096. [doi:10.1057/jors.2010.186](https://doi.org/10.1057/jors.2010.186)
   * Variable neighborhood search, better than ACO and genetic algorithms, for $P_m \mid \text{p-batch}, \text{incompatible} \mid \sum w_j T_j$.

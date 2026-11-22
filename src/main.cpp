@@ -5,6 +5,7 @@
 #include "batchschedulingsolver/algorithms/milp_arc_flow.hpp"
 #include "batchschedulingsolver/algorithms/brute_force.hpp"
 #include "batchschedulingsolver/algorithms/tree_search.hpp"
+#include "batchschedulingsolver/algorithms/local_search.hpp"
 
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
@@ -120,6 +121,13 @@ Output run(
         read_args(parameters, vm);
         return brute_force(instance, parameters);
 
+    } else if (algorithm == "local-search") {
+        LocalSearchParameters parameters;
+        read_args(parameters, vm);
+        if (vm.count("maximum-number-of-iterations"))
+            parameters.maximum_number_of_iterations = vm["maximum-number-of-iterations"].as<int64_t>();
+        return local_search(instance, generator, nullptr, parameters);
+
     } else if (algorithm == "tree-search") {
         TreeSearchParameters parameters;
         read_args(parameters, vm);
@@ -151,12 +159,13 @@ int main(int argc, char *argv[])
         ("certificate,c", po::value<std::string>(), "Certificate path")
         ("log,l", po::value<std::string>(), "Log path")
         ("time-limit,t", po::value<double>(), "Time limit in seconds")
-        ("seed,s", po::value<Seed>(), "Seed (not used)")
+        ("seed,s", po::value<Seed>(), "Seed")
         ("only-write-at-the-end,e", "Only write output and certificate files at the end")
         ("verbosity-level,v", po::value<int>(), "Verbosity level")
         ("log-to-stderr,w", "Write log in stderr")
 
         ("solver,", po::value<mathoptsolverscmake::SolverName>(), "set solver")
+        ("maximum-number-of-iterations,", po::value<int64_t>(), "Maximum number of iterations (local search)")
         ;
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);

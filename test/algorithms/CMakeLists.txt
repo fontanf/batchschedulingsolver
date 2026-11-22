@@ -56,3 +56,14 @@ target_link_libraries(BatchSchedulingSolver_tree_search_test
 gtest_discover_tests(BatchSchedulingSolver_tree_search_test
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     PROPERTIES TIMEOUT 3600)
+
+add_executable(BatchSchedulingSolver_local_search_test)
+target_sources(BatchSchedulingSolver_local_search_test PRIVATE
+    local_search_test.cpp)
+target_link_libraries(BatchSchedulingSolver_local_search_test
+    BatchSchedulingSolver_tests
+    BatchSchedulingSolver_local_search
+    GTest::gtest_main)
+gtest_discover_tests(BatchSchedulingSolver_local_search_test
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    PROPERTIES TIMEOUT 3600)
