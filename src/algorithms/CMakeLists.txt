@@ -55,3 +55,14 @@ target_link_libraries(BatchSchedulingSolver_local_search PUBLIC
     BatchSchedulingSolver_batchschedulingsolver
     LocalSearchSolver::localsearchsolver)
 add_library(BatchSchedulingSolver::local_search ALIAS BatchSchedulingSolver_local_search)
+
+add_library(BatchSchedulingSolver_column_generation)
+target_sources(BatchSchedulingSolver_column_generation PRIVATE
+    column_generation.cpp)
+target_include_directories(BatchSchedulingSolver_column_generation PUBLIC
+    ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(BatchSchedulingSolver_column_generation PUBLIC
+    BatchSchedulingSolver_batchschedulingsolver
+    MathOptSolversCMake::milp
+    ColumnGenerationSolver::columngenerationsolver)
+add_library(BatchSchedulingSolver::column_generation ALIAS BatchSchedulingSolver_column_generation)

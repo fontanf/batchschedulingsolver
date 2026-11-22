@@ -68,8 +68,10 @@ $P_m$, $R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid C_{\max}$
 ## Total completion time
 
 $1 \mid \text{p-batch}, B, \text{size}\_j \mid \sum C_j$, $P_m \mid \text{p-batch}, B, \text{size}\_j \mid \sum C_j$
-* **Planned**: A. Alfieri, A. Druetto, A. Grosso and F. Salassa (2021). Column generation for minimizing total completion time in a parallel-batching environment. *Journal of Scheduling*. [doi:10.1007/s10951-021-00703-9](https://doi.org/10.1007/s10951-021-00703-9)
+* **Done**: A. Alfieri, A. Druetto, A. Grosso and F. Salassa (2021). Column generation for minimizing total completion time in a parallel-batching environment. *Journal of Scheduling*. [doi:10.1007/s10951-021-00703-9](https://doi.org/10.1007/s10951-021-00703-9)
   * Graph-based formulation with an exponential number of variables, solved by column generation: a lower bound that strongly dominates the previous ones, embedded in a price-and-branch heuristic and an exact branch-and-price. Handles parallel machines.
+  * Done: the arc-based model on a single machine, solved with columngenerationsolver, `--algorithm column-generation`, with the limited discrepancy search of columngenerationsolver instead of the price-and-branch heuristic of the paper, generalized to weights and incompatible families. See [`column_generation.md`](column_generation.md).
+  * Missing: the parallel machine case, and the exact branch-and-price.
   * Benchmark: the instances of the paper, in `data/alfieri2021` (`--format alfieri2021`).
 * **Suggested**: N. Rafiee Parsa, B. Karimi and S. M. Moattar Husseini (2016). Minimizing total flow time on a batch processing machine using a hybrid max–min ant system. *Computers & Industrial Engineering*, 99, 372–381. [doi:10.1016/j.cie.2016.06.008](https://doi.org/10.1016/j.cie.2016.06.008)
   * Max–min ant system on the job sequence, with dynamic programming for the optimal batching of the sequence and a local search.
@@ -85,8 +87,10 @@ $P_m \mid \text{p-batch}, B, \text{size}\_j, r_j \mid \sum C_j$
 ## Total weighted completion time
 
 $1 \mid \text{p-batch}, B, \text{size}\_j \mid \sum w_j C_j$
-* **Suggested**: A. Druetto and A. Grosso (2021). Column generation and rounding heuristics for minimizing the total weighted completion time on a single batching machine. *Computers & Operations Research*, 105639. [doi:10.1016/j.cor.2021.105639](https://doi.org/10.1016/j.cor.2021.105639)
+* **Done**: A. Druetto and A. Grosso (2022). Column generation and rounding heuristics for minimizing the total weighted completion time on a single batching machine. *Computers & Operations Research*, 105639. [doi:10.1016/j.cor.2021.105639](https://doi.org/10.1016/j.cor.2021.105639)
   * Weighted extension of the graph-based formulation of Alfieri et al. (2021): very tight column generation bound and rounding heuristics within a few percent of the optimum.
+  * Done: the arc-based model, `--algorithm column-generation`, with the limited discrepancy search of columngenerationsolver instead of the rounding heuristics (VR-UB, ER-UB) of the paper. See [`column_generation.md`](column_generation.md).
+  * Missing: the benchmark of the paper (not in `data/`).
 
 $P_m \mid \text{p-batch}, B_i, \text{size}\_j \mid \sum w_j C_j$
 * **Suggested**: H. Zhang, Z. Jia and K. Li (2020). Ant colony optimization algorithm for total weighted completion time minimization on non-identical batch machines. *Computers & Operations Research*, 117, 104889. [doi:10.1016/j.cor.2020.104889](https://doi.org/10.1016/j.cor.2020.104889)
@@ -110,7 +114,7 @@ $P_m$, $R_m \mid \text{p-batch}, B_i, \text{size}\_j, r_j \mid \sum w_j T_j$
 
 ## Incompatible job families
 
-The instances have families (`family_id`), but only the brute force and the local search support incompatible families (a batch can only contain jobs of the same family).
+The instances have families (`family_id`), but only the brute force, the local search and the column generation support incompatible families (a batch can only contain jobs of the same family).
 
 * **Suggested**: F. Yang, M. Davari, W. Wei, B. Hermans and R. Leus (2022). Scheduling a single parallel-batching machine with non-identical job sizes and incompatible job families. *European Journal of Operational Research*. [doi:10.1016/j.ejor.2022.03.027](https://doi.org/10.1016/j.ejor.2022.03.027)
   * $1 \mid \text{p-batch}, B, \text{size}\_j, \text{incompatible} \mid \sum w_j C_j$: assignment-based, time-indexed and set-partitioning formulations, branch-and-price and a column-generation-based heuristic.

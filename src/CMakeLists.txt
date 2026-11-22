@@ -27,6 +27,7 @@ if(BATCHSCHEDULINGSOLVER_BUILD_MAIN)
         BatchSchedulingSolver_brute_force
         BatchSchedulingSolver_tree_search
         BatchSchedulingSolver_local_search
+        BatchSchedulingSolver_column_generation
         Boost::program_options
         Boost::filesystem)
     set_target_properties(BatchSchedulingSolver_main PROPERTIES OUTPUT_NAME "batchschedulingsolver")

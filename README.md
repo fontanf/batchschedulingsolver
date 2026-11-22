@@ -71,11 +71,13 @@ $1 \mid \text{p-batch}, B, \text{size}\_j, r_j, \text{incompatible} \mid C_{\max
 $1 \mid \text{p-batch}, B, \text{size}\_j \mid \sum C_j$
 * [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
 * [Tree search](doc/tree_search.md) `--algorithm tree-search` (exact; beam search on large instances)
+* [Column generation](doc/column_generation.md) `--algorithm column-generation` (heuristic: limited discrepancy search, with the bound of the linear relaxation)
 * [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
 
 $1 \mid \text{p-batch}, B, \text{size}\_j \mid \sum w_j C_j$
 * [MILP, three-index](doc/milp_rank_based_three_index.md) `--algorithm milp-rank-based-three-index` (exact)
 * [Tree search](doc/tree_search.md) `--algorithm tree-search` (exact; beam search on large instances)
+* [Column generation](doc/column_generation.md) `--algorithm column-generation` (heuristic: limited discrepancy search, with the bound of the linear relaxation)
 * [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
 
 $1 \mid \text{p-batch}, B, \text{size}\_j, r_j \mid \sum w_j C_j$
@@ -84,6 +86,7 @@ $1 \mid \text{p-batch}, B, \text{size}\_j, r_j \mid \sum w_j C_j$
 * [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
 
 $1 \mid \text{p-batch}, B, \text{size}\_j, \text{incompatible} \mid \sum w_j C_j$
+* [Column generation](doc/column_generation.md) `--algorithm column-generation` (heuristic: limited discrepancy search, with the bound of the linear relaxation)
 * [Local search](doc/local_search.md) `--algorithm local-search` (heuristic)
 
 $1 \mid \text{p-batch}, B, \text{size}\_j, r_j, \text{incompatible} \mid \sum w_j C_j$
