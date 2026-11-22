@@ -29,6 +29,7 @@ double Solution::objective_value() const
 bool Solution::feasible() const
 {
     return (this->number_of_overlapping_batches_ == 0
+        && this->number_of_overcapacitated_batches_ == 0
         && this->number_of_family_violations_ == 0
         && this->number_of_release_date_violations_ == 0
         && this->number_of_jobs_ == instance().number_of_jobs());

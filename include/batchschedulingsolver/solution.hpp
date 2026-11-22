@@ -86,7 +86,7 @@ public:
     bool contains(JobId job_id) const { return this->jobs_[job_id].machine_id != -1; }
 
     /** Get the number of overcapacitated batches. */
-    BatchId number_of_overcapacitated_batches() const { return this->number_of_overlapping_batches_; }
+    BatchId number_of_overcapacitated_batches() const { return this->number_of_overcapacitated_batches_; }
 
     /** Get the number of overlapping batches. */
     BatchId number_of_overlapping_batches() const { return this->number_of_overlapping_batches_; }
