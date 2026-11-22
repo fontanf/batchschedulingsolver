@@ -50,48 +50,52 @@ Bound: in an integer solution compatible with the fixed columns, each arc which 
 
 ## Limited discrepancy search
 
-`columngenerationsolver::limited_discrepancy_search`, with the default parameters (no discrepancy limit, `--time-limit` as time limit): at each node, the column generation solves the linear relaxation with the fixed columns; the main child fixes the column of the relaxation closest to 1 (a batch at a position of the sequence), the other child forbids it and has one more discrepancy; nodes are explored by increasing discrepancy. The first dive is similar to the rounding of Druetto and Grosso (2022), except that the fixed arc isn't necessarily the one closest to the source. Integral relaxation solutions, and the rounding of the relaxation solutions, give new solutions.
+`columngenerationsolver::limited_discrepancy_search`, with the default parameters (no discrepancy limit, `--time-limit` as time limit): at each node, the column generation solves the linear relaxation with the fixed columns; the main child fixes a column of the relaxation to 1 (a batch at a position of the sequence), the other child forbids it and has one more discrepancy; nodes are explored by increasing discrepancy. Integral relaxation solutions, and the rounding of the relaxation solutions, give new solutions.
+
+The column to fix is chosen by its `branching_priority`, then by its value (the closest to 1). By default (`source_first_branching` in `ColumnGenerationParameters`, `--source-first-branching`), the priority of an arc is minus its start node, so the search fixes the arcs from the source, as the rounding of Druetto and Grosso (2022): among the arcs of the relaxation which start the earliest, the one with the largest value. The arcs which start before the end of the fixed arcs are out of the relaxation, so this is the next batch of the sequence. With `--source-first-branching 0`, the priorities are 0 and the search fixes the arc closest to 1, wherever it is in the sequence: on the `alfieri2021` instances below, the average gap is 1.76% instead of 1.00%, and the solution is better with the source first on 137 instances and worse on 11.
+
+The source first priority needs columngenerationsolver with fixed columns excluded from the branching candidates ([fontanf/columngenerationsolver#86](https://github.com/fontanf/columngenerationsolver/pull/86)): before, a fixed arc stayed in the relaxation at value 1 and, having the highest priority, was branched on again (fixed to 2, 3, ...) at every node, without solving the relaxations, until a stack overflow.
 
 columngenerationsolver identifies the columns by their content, so a forbidden arc generated again by the pricing is discarded; since the pricing only returns the best arc for each weight and start node, it then returns no arc for this weight and start node at this node.
 
-The search only branches on the columns of the relaxations, so it isn't complete: on small instances, it may explore its whole tree without finding an optimal solution (1 instance among 500 in the verification below).
+The search only branches on the columns of the relaxations, so it isn't complete: on small instances, it may explore its whole tree without finding an optimal solution (with the closest-to-1 priority, 1 instance among the 500 of the verification below).
 
 ## Verification
 
 * The single machine total flow time and total weighted flow time test instances without release dates solved by the brute force (68 instances): the algorithm finds the optimal value and proves it (bound equal to the value).
-* 500 random instances with up to 9 jobs, capacities 1 to 10, processing times up to 50, weights 1 to 10, and families on 40% of them, with a time limit of 5 s: all the solutions are feasible (independent check), every bound is at most the optimal value given by the brute force, and the algorithm finds the optimal value on 499 instances (it proves optimality on 482). On the remaining one, the limited discrepancy search explores its whole tree (17 nodes) and returns 611 for an optimal value of 609.
+* 500 random instances with up to 9 jobs, capacities 1 to 10, processing times up to 50, weights 1 to 10, and families on 40% of them, with a time limit of 5 s: all the solutions are feasible (independent check), every bound is at most the optimal value given by the brute force, and the algorithm finds the optimal value on all of them (it proves optimality on 482). With the closest-to-1 priority, it finds it on 499: on the remaining one, the limited discrepancy search explores its whole tree (17 nodes) and returns 611 for an optimal value of 609.
 * Each solution of the master problem is checked: its arcs must form a path from 0 to $W$, and the value recomputed by `SolutionBuilder` must be the value of the master problem; otherwise, `std::logic_error` is thrown.
 
 ## Results
 
-`alfieri2021` instances with $b = 10$ (single machine, $\sum C_j$), 60 s per instance (the time limit of the price-and-branch heuristic in Alfieri et al., 2021), 6 instances in parallel on 6 cores, HiGHS. The gap is $100 (UB - LB) / UB$ with the bound and the value of the solution of the algorithm, as in the paper.
+`alfieri2021` instances with $b = 10$ (single machine, $\sum C_j$), 60 s per instance (the time limit of the price-and-branch heuristic in Alfieri et al., 2021), 6 instances in parallel on 6 cores, HiGHS. The runs used columngenerationsolver `c7073b6` with the fix of [fontanf/columngenerationsolver#86](https://github.com/fontanf/columngenerationsolver/pull/86) (the pinned commit is this fix on a more recent `main`). The column "Closest to 1" is the average gap with `--source-first-branching 0`. The gap is $100 (UB - LB) / UB$ with the bound and the value of the solution of the algorithm, as in the paper.
 
-| $n$ | $\sigma$ | Gap (average) | Gap (worst) | Gap (best) | Optimal | Paper: gap (average) | Paper: optimal |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 20 | $\sigma_1$ | 0.76% | 1.71% | 0.00% | 2 / 10 | 1.30% | 2 / 10 |
-| 20 | $\sigma_2$ | 1.06% | 2.86% | 0.00% | 2 / 10 | 1.55% | 2 / 10 |
-| 20 | $\sigma_3$ | 0.62% | 3.15% | 0.00% | 7 / 10 | 0.63% | 7 / 10 |
-| 20 | $\sigma_4$ | 1.53% | 2.83% | 0.61% | 0 / 10 | 2.15% | 0 / 10 |
-| 40 | $\sigma_1$ | 2.19% | 7.75% | 0.09% | 0 / 10 | 1.30% | 0 / 10 |
-| 40 | $\sigma_2$ | 1.84% | 3.66% | 0.11% | 0 / 10 | 1.17% | 0 / 10 |
-| 40 | $\sigma_3$ | 1.17% | 2.04% | 0.00% | 1 / 10 | 0.89% | 1 / 10 |
-| 40 | $\sigma_4$ | 2.66% | 5.46% | 0.45% | 0 / 10 | 2.61% | 0 / 10 |
-| 60 | $\sigma_1$ | 1.81% | 2.94% | 0.30% | 0 / 10 | 0.91% | 0 / 10 |
-| 60 | $\sigma_2$ | 2.15% | 3.93% | 0.60% | 0 / 10 | 0.98% | 0 / 10 |
-| 60 | $\sigma_3$ | 0.88% | 2.28% | 0.00% | 1 / 10 | 0.49% | 1 / 10 |
-| 60 | $\sigma_4$ | 4.61% | 9.74% | 0.64% | 0 / 10 | 2.57% | 0 / 10 |
-| 80 | $\sigma_1$ | 1.54% | 3.03% | 0.34% | 0 / 10 | 0.74% | 0 / 10 |
-| 80 | $\sigma_2$ | 1.93% | 4.67% | 0.08% | 0 / 10 | 0.82% | 0 / 10 |
-| 80 | $\sigma_3$ | 1.36% | 2.75% | 0.50% | 0 / 10 | 0.47% | 0 / 10 |
-| 80 | $\sigma_4$ | 3.64% | 5.05% | 1.87% | 0 / 10 | 5.78% | 0 / 10 |
-| 100 | $\sigma_1$ | 0.92% | 1.75% | 0.06% | 0 / 10 | 0.46% | 0 / 10 |
-| 100 | $\sigma_2$ | 1.26% | 2.35% | 0.49% | 0 / 10 | 0.41% | 0 / 10 |
-| 100 | $\sigma_3$ | 0.38% | 0.83% | 0.00% | 2 / 10 | 0.17% | 2 / 10 |
-| 100 | $\sigma_4$ | 3.62% | 5.11% | 1.14% | 0 / 10 | 4.44% | 0 / 10 |
+| $n$ | $\sigma$ | Gap (average) | Gap (worst) | Gap (best) | Optimal | Closest to 1: gap (average) | Paper: gap (average) | Paper: optimal |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 20 | $\sigma_1$ | 0.75% | 1.71% | 0.00% | 2 / 10 | 0.76% | 1.30% | 2 / 10 |
+| 20 | $\sigma_2$ | 1.06% | 2.86% | 0.00% | 2 / 10 | 1.06% | 1.55% | 2 / 10 |
+| 20 | $\sigma_3$ | 0.62% | 3.15% | 0.00% | 7 / 10 | 0.62% | 0.63% | 7 / 10 |
+| 20 | $\sigma_4$ | 1.53% | 2.83% | 0.61% | 0 / 10 | 1.53% | 2.15% | 0 / 10 |
+| 40 | $\sigma_1$ | 1.10% | 2.44% | 0.06% | 0 / 10 | 2.11% | 1.30% | 0 / 10 |
+| 40 | $\sigma_2$ | 1.06% | 1.75% | 0.11% | 0 / 10 | 1.66% | 1.17% | 0 / 10 |
+| 40 | $\sigma_3$ | 0.75% | 1.39% | 0.00% | 1 / 10 | 1.14% | 0.89% | 1 / 10 |
+| 40 | $\sigma_4$ | 1.57% | 2.97% | 0.45% | 0 / 10 | 2.44% | 2.61% | 0 / 10 |
+| 60 | $\sigma_1$ | 1.00% | 2.45% | 0.23% | 0 / 10 | 1.81% | 0.91% | 0 / 10 |
+| 60 | $\sigma_2$ | 1.06% | 2.52% | 0.21% | 0 / 10 | 2.14% | 0.98% | 0 / 10 |
+| 60 | $\sigma_3$ | 0.60% | 1.38% | 0.00% | 1 / 10 | 0.87% | 0.49% | 1 / 10 |
+| 60 | $\sigma_4$ | 1.82% | 3.36% | 0.64% | 0 / 10 | 4.61% | 2.57% | 0 / 10 |
+| 80 | $\sigma_1$ | 0.92% | 1.85% | 0.23% | 0 / 10 | 1.53% | 0.74% | 0 / 10 |
+| 80 | $\sigma_2$ | 0.77% | 1.25% | 0.07% | 0 / 10 | 1.93% | 0.82% | 0 / 10 |
+| 80 | $\sigma_3$ | 0.57% | 1.18% | 0.17% | 0 / 10 | 1.21% | 0.47% | 0 / 10 |
+| 80 | $\sigma_4$ | 1.87% | 2.61% | 1.17% | 0 / 10 | 3.64% | 5.78% | 0 / 10 |
+| 100 | $\sigma_1$ | 0.60% | 1.28% | 0.05% | 0 / 10 | 0.88% | 0.46% | 0 / 10 |
+| 100 | $\sigma_2$ | 0.58% | 0.93% | 0.13% | 0 / 10 | 1.26% | 0.41% | 0 / 10 |
+| 100 | $\sigma_3$ | 0.20% | 0.70% | 0.00% | 2 / 10 | 0.38% | 0.17% | 2 / 10 |
+| 100 | $\sigma_4$ | 1.53% | 2.29% | 0.99% | 0 / 10 | 3.54% | 4.44% | 0 / 10 |
 
 The columns "Paper" are the results of the price-and-branch heuristic (CG-UB) of Alfieri et al. (2021), Table 1, with the same lower bound and time limit, CPLEX 12.8 and an Intel Core i7-6500U, on their instances generated the same way (the files of `data/alfieri2021` may not be the instances of their tables, see [`benchmarks.md`](benchmarks.md)). The optimal counts are the instances where the solution reaches the bound.
 
-The root bound is fast (about 3 s on `inst_100_4_1`), and the LP solves take almost all the time: on `inst_100_4_1`, 41 s of LP solves against 0.17 s of pricing in 60 s. The limited discrepancy search is better than the price-and-branch heuristic on the 20-job instances and on the $\sigma_4$ instances with 80 and 100 jobs (where the price-and-branch heuristic reaches its time limit), similar on the $\sigma_4$ instances with 40 jobs, and worse on the other instances with 40 to 100 jobs, by about a factor 2 on the average gap. It reaches the bound on the same numbers of instances.
+The root bound is fast (about 3 s on `inst_100_4_1`), and the LP solves take almost all the time: on `inst_100_4_1`, 41 s of LP solves against 0.17 s of pricing in 60 s. Compared with the price-and-branch heuristic, the limited discrepancy search has a smaller average gap on the instances with 20 and 40 jobs and on the $\sigma_4$ instances (where the price-and-branch heuristic reaches its time limit with 80 and 100 jobs), and a larger one on most of the $\sigma_1$ to $\sigma_3$ groups with 60 to 100 jobs (0.58% against 0.41% on $\sigma_2$ with 100 jobs). It reaches the bound on the same numbers of instances.
 
 ## Tests
 

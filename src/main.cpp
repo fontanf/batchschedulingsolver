@@ -132,6 +132,8 @@ Output run(
     } else if (algorithm == "column-generation") {
         ColumnGenerationParameters parameters;
         read_args(parameters, vm);
+        if (vm.count("source-first-branching"))
+            parameters.source_first_branching = vm["source-first-branching"].as<bool>();
         if (vm.count("solver"))
             parameters.solver = vm["solver"].as<mathoptsolverscmake::SolverName>();
         return column_generation(instance, parameters);
@@ -173,6 +175,7 @@ int main(int argc, char *argv[])
         ("log-to-stderr,w", "Write log in stderr")
 
         ("solver,", po::value<mathoptsolverscmake::SolverName>(), "set solver")
+        ("source-first-branching,", po::value<bool>(), "column generation: fix the arcs from the source")
         ("maximum-number-of-iterations,", po::value<int64_t>(), "Maximum number of iterations (local search)")
         ;
     po::variables_map vm;

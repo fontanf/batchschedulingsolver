@@ -35,6 +35,13 @@ struct ColumnGenerationParameters: Parameters
      */
     int64_t maximum_number_of_columns_per_pricing = -1;
 
+    /**
+     * If true, the limited discrepancy search fixes the arcs from the source:
+     * the branching priority of an arc is minus its start node. Otherwise,
+     * it fixes the arc whose value is the closest to 1.
+     */
+    bool source_first_branching = true;
+
     /** Maximum discrepancy of the limited discrepancy search. */
     double discrepancy_limit = std::numeric_limits<double>::infinity();
 
@@ -48,6 +55,7 @@ struct ColumnGenerationParameters: Parameters
         os
             << std::setw(width) << std::left << "Solver: " << solver << std::endl
             << std::setw(width) << std::left << "Max. # of columns per pricing: " << maximum_number_of_columns_per_pricing << std::endl
+            << std::setw(width) << std::left << "Source first branching: " << source_first_branching << std::endl
             << std::setw(width) << std::left << "Discrepancy limit: " << discrepancy_limit << std::endl
             ;
     }
@@ -57,6 +65,7 @@ struct ColumnGenerationParameters: Parameters
         nlohmann::json json = Parameters::to_json();
         json.merge_patch({
                 {"MaximumNumberOfColumnsPerPricing", maximum_number_of_columns_per_pricing},
+                {"SourceFirstBranching", source_first_branching},
                 {"DiscrepancyLimit", discrepancy_limit},
                 });
         return json;
