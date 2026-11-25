@@ -21,7 +21,8 @@ $1 \mid \text{p-batch}, B, \text{size}\_j \mid C_{\max}$
 * **Done**: greedy LPT, `--algorithm greedy-longest-processing-time`, optimal with identical sizes. See [`greedy_longest_processing_time.md`](greedy_longest_processing_time.md).
 * **Done**: R. S. Trindade, O. C. B. de Araújo and M. Fampa (2021). Arc-flow approach for single batch-processing machine scheduling. *Computers & Operations Research*, 134, 105394. [doi:10.1016/j.cor.2021.105394](https://doi.org/10.1016/j.cor.2021.105394)
   * Done: arc-flow MILP, `--algorithm milp-arc-flow`. See [`milp_arc_flow.md`](milp_arc_flow.md).
-  * Missing: the benchmark of the paper (instances of Chen et al., 2011, and random instances with many identical jobs).
+  * Done: the instances of Chen et al. (2011), `--format chen2011`: all solved to optimality, see [`milp_arc_flow.md`](milp_arc_flow.md#results).
+  * Missing: the other instances of the paper (random instances with many identical jobs).
 * **Planned**: S. Zheng, N. Xie, Q. Wu and C. Liu (2025). Novel mathematical formulations for parallel-batching processing machine scheduling problems. *Computers & Operations Research*, 173, 106859. [doi:10.1016/j.cor.2024.106859](https://doi.org/10.1016/j.cor.2024.106859)
   * New formulations with valid inequalities, and a framework using dual information and bounding techniques, for single and parallel machines. Reported as the state of the art, proving the optimality of instances of the literature that were open.
 * **Suggested**: İ. Muter (2020). Exact algorithms to minimize makespan on single and parallel batch processing machines. *European Journal of Operational Research*, 285(2), 470–483. [doi:10.1016/j.ejor.2020.01.065](https://doi.org/10.1016/j.ejor.2020.01.065)
@@ -36,7 +37,7 @@ $1 \mid \text{p-batch}, B, \text{size}\_j \mid C_{\max}$
   * Branch-and-bound with dominance properties, also used as a heuristic: a classical reference to compare with.
 * **Suggested**: R. Uzsoy (1994). Scheduling a single batch processing machine with non-identical job sizes. *International Journal of Production Research*, 32(7), 1615–1635. [doi:10.1080/00207549408957026](https://doi.org/10.1080/00207549408957026)
   * FFLPT (first fit instead of the next fit of `greedy-longest-processing-time`), the baseline heuristic of most papers.
-* Benchmark: the instances of H. Chen, B. Du and G. Q. Huang (2011). Scheduling a batch processing machine with non-identical job sizes: a clustering perspective. *International Journal of Production Research*, 49(19), 5755–5778. [doi:10.1080/00207543.2010.512620](https://doi.org/10.1080/00207543.2010.512620). They are in `data/chen2011` (XML files), but there is no reader for their format yet.
+* Benchmark: the instances of H. Chen, B. Du and G. Q. Huang (2011). Scheduling a batch processing machine with non-identical job sizes: a clustering perspective. *International Journal of Production Research*, 49(19), 5755–5778. [doi:10.1080/00207543.2010.512620](https://doi.org/10.1080/00207543.2010.512620). They are in `data/chen2011` (`--format chen2011`), with their optimal values in `data/data_single_makespan.csv`, see [`benchmarks.md`](benchmarks.md#chen2011).
 
 ## Single machine, makespan, release dates
 

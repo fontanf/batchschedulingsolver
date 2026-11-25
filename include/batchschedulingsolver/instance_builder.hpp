@@ -89,6 +89,12 @@ private:
     /** Read an instance from a file in 'queiroga2020' format. */
     void read_queiroga2020(std::ifstream& file);
 
+    /**
+     * Read an instance from a file in 'chen2011' format (XML, one 'Job'
+     * element per job and one 'Machine' element per machine).
+     */
+    void read_chen2011(std::ifstream& file);
+
     /*
      * Private attributes
      */

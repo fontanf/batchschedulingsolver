@@ -1,0 +1,8 @@
+add_executable(BatchSchedulingSolver_instance_builder_test)
+target_sources(BatchSchedulingSolver_instance_builder_test PRIVATE
+    instance_builder_test.cpp)
+target_link_libraries(BatchSchedulingSolver_instance_builder_test
+    BatchSchedulingSolver_batchschedulingsolver
+    GTest::gtest_main)
+gtest_discover_tests(BatchSchedulingSolver_instance_builder_test
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
