@@ -9,7 +9,7 @@ python3 scripts/download_data.py --archives benchmarks
 | --- | --- | --- | --- | --- |
 | [`queiroga2020`](#queiroga2020) | $1 \mid \text{p-batch}, B, \text{size}\_j, r_j \mid \sum w_j T_j$ | 810 (1,364 files) | `queiroga2020` | `data/data_single_twt.csv` |
 | [`alfieri2021`](#alfieri2021) | $1 \mid \text{p-batch}, B, \text{size}\_j \mid \sum C_j$ | 320 | `alfieri2021` | `data/data_single_tct.csv` (no values yet) |
-| [`chen2011`](#chen2011) | $1 \mid \text{p-batch}, B, \text{size}\_j \mid C_{\max}$ | 4,200 | XML (no reader yet) | none |
+| [`chen2011`](#chen2011) | $1 \mid \text{p-batch}, B, \text{size}\_j \mid C_{\max}$ | 4,200 | `chen2011` | `data/data_single_makespan.csv` |
 
 In all of them, the processing time of a batch is the largest processing time of its jobs, the total size of the jobs of a batch must not exceed the capacity $B$ of the machine, and the sizes, processing times, weights, release dates and due dates are integers.
 
@@ -90,9 +90,9 @@ The release dates, due dates and deadlines are 0, and the weights are 1.
 
 **Files.** `chen2011/<n> Jobs/p<a>s<b>/<i>.xml`, with `doi.url` pointing to the paper.
 
-**Format.** XML (a .NET `DataSet`): `Job` elements with `ID`, `Size`, `ProcessingTime`, `ReleaseTime`, `Weight`, `DueDate` and `Deadline`, and `Machine` elements with `ID` and `Capacity`. The repository has no reader for this format yet (see [`roadmap.md`](roadmap.md)).
+**Format** (`--format chen2011`): XML (a .NET `DataSet`), with CRLF line endings: `Job` elements with `ID`, `Size`, `ProcessingTime`, `ReleaseTime`, `Weight`, `DueDate` and `Deadline`, and `Machine` elements with `ID` and `Capacity`, after an XML schema. The reader takes the jobs in the order of their `ID` (which must be 0, 1, 2, ...), one machine per `Machine` element, and sets the objective to the makespan. A due date of 0 means no due date, and a non-zero deadline is rejected (the repository doesn't support deadlines). It only supports this layout (elements without attributes whose children are simple elements), not general XML.
 
-**Reference values.** None in the repository yet.
+**Reference values.** `data/data_single_makespan.csv` gives the optimal value of the 4,200 instances, all proved optimal by the arc-flow MILP (`milp-arc-flow`, see [`milp_arc_flow.md`](milp_arc_flow.md#results)): 4,195 within 60 s, and the 5 others within 65 s.
 
 ## References
 

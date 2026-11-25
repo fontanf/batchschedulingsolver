@@ -1,5 +1,8 @@
 #include "batchschedulingsolver/instance_builder.hpp"
 
+#include <map>
+#include <sstream>
+
 using namespace batchschedulingsolver;
 
 void InstanceBuilder::set_number_of_machines(MachineId number_of_machines)
@@ -194,6 +197,8 @@ void InstanceBuilder::read(
         read_alfieri2021(file);
     } else if (format == "queiroga2020") {
         read_queiroga2020(file);
+    } else if (format == "chen2011") {
+        read_chen2011(file);
     } else {
         throw std::invalid_argument(
                 FUNC_SIGNATURE + ": "
@@ -336,4 +341,142 @@ Instance InstanceBuilder::build()
     }
 
     return std::move(instance_);
+}
+
+namespace
+{
+
+/**
+ * Return the elements named 'name' of an XML document, each as a map from
+ * the names of its child elements to their texts.
+ *
+ * Only supports what the 'chen2011' files use: elements without attributes
+ * whose children are simple elements with a text.
+ */
+std::vector<std::map<std::string, std::string>> xml_elements(
+        const std::string& content,
+        const std::string& name)
+{
+    std::vector<std::map<std::string, std::string>> elements;
+    const std::string open = "<" + name + ">";
+    const std::string close = "</" + name + ">";
+    std::string::size_type pos = 0;
+    for (;;) {
+        std::string::size_type start = content.find(open, pos);
+        if (start == std::string::npos)
+            break;
+        start += open.size();
+        std::string::size_type end = content.find(close, start);
+        if (end == std::string::npos) {
+            throw std::invalid_argument(
+                    FUNC_SIGNATURE + ": "
+                    "missing \"" + close + "\".");
+        }
+        std::map<std::string, std::string> element;
+        std::string::size_type child_pos = start;
+        for (;;) {
+            std::string::size_type tag_start = content.find('<', child_pos);
+            if (tag_start == std::string::npos || tag_start >= end)
+                break;
+            std::string::size_type tag_end = content.find('>', tag_start);
+            std::string tag = content.substr(tag_start + 1, tag_end - tag_start - 1);
+            std::string child_close = "</" + tag + ">";
+            std::string::size_type text_end = content.find(child_close, tag_end);
+            if (text_end == std::string::npos || text_end > end) {
+                throw std::invalid_argument(
+                        FUNC_SIGNATURE + ": "
+                        "missing \"" + child_close + "\" in \"" + name + "\".");
+            }
+            element[tag] = content.substr(tag_end + 1, text_end - tag_end - 1);
+            child_pos = text_end + child_close.size();
+        }
+        elements.push_back(element);
+        pos = end + close.size();
+    }
+    return elements;
+}
+
+int64_t xml_integer(
+        const std::map<std::string, std::string>& element,
+        const std::string& name,
+        const std::string& tag)
+{
+    auto it = element.find(tag);
+    if (it == element.end()) {
+        throw std::invalid_argument(
+                FUNC_SIGNATURE + ": "
+                "missing \"" + tag + "\" in \"" + name + "\".");
+    }
+    std::size_t length = 0;
+    int64_t value = 0;
+    try {
+        value = std::stoll(it->second, &length);
+    } catch (const std::exception&) {
+        length = 0;
+    }
+    if (length == 0 || length != it->second.size()) {
+        throw std::invalid_argument(
+                FUNC_SIGNATURE + ": "
+                "invalid \"" + tag + "\" in \"" + name + "\": "
+                "\"" + it->second + "\".");
+    }
+    return value;
+}
+
+}
+
+void InstanceBuilder::read_chen2011(std::ifstream& file)
+{
+    std::stringstream ss;
+    ss << file.rdbuf();
+    const std::string content = ss.str();
+
+    // Machines.
+    std::vector<std::map<std::string, std::string>> machines = xml_elements(content, "Machine");
+    if (machines.empty()) {
+        throw std::invalid_argument(
+                FUNC_SIGNATURE + ": "
+                "no \"Machine\" element.");
+    }
+    set_number_of_machines(machines.size());
+    for (MachineId machine_id = 0;
+            machine_id < (MachineId)machines.size();
+            ++machine_id) {
+        set_machine_capacity(
+                machine_id,
+                xml_integer(machines[machine_id], "Machine", "Capacity"));
+    }
+
+    // Jobs, in the order of their IDs.
+    std::vector<std::map<std::string, std::string>> jobs = xml_elements(content, "Job");
+    for (JobId job_pos = 0; job_pos < (JobId)jobs.size(); ++job_pos) {
+        if (xml_integer(jobs[job_pos], "Job", "ID") != job_pos) {
+            throw std::invalid_argument(
+                    FUNC_SIGNATURE + ": "
+                    "the jobs must have the IDs 0, 1, 2, ... in this order.");
+        }
+        if (xml_integer(jobs[job_pos], "Job", "Deadline") != 0) {
+            throw std::invalid_argument(
+                    FUNC_SIGNATURE + ": "
+                    "deadlines are not supported.");
+        }
+        JobId job_id = add_job();
+        for (MachineId machine_id = 0;
+                machine_id < (MachineId)machines.size();
+                ++machine_id) {
+            set_job_processing_time(
+                    job_id,
+                    machine_id,
+                    xml_integer(jobs[job_pos], "Job", "ProcessingTime"));
+        }
+        set_job_size(job_id, xml_integer(jobs[job_pos], "Job", "Size"));
+        set_job_release_date(job_id, xml_integer(jobs[job_pos], "Job", "ReleaseTime"));
+        // A due date of 0 means no due date.
+        Time due_date = xml_integer(jobs[job_pos], "Job", "DueDate");
+        if (due_date > 0)
+            set_job_due_date(job_id, due_date);
+        set_job_weight(job_id, xml_integer(jobs[job_pos], "Job", "Weight"));
+    }
+
+    set_objective(Objective::Makespan);
 }

@@ -1,0 +1,37 @@
+<?xml version="1.0" standalone="yes"?>
+<InputDataSet>
+  <xs:schema id="InputDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="Job" />
+  </xs:schema>
+  <Job>
+    <ID>0</ID>
+    <Size>6</Size>
+    <ProcessingTime>4</ProcessingTime>
+    <ReleaseTime>0</ReleaseTime>
+    <Weight>1</Weight>
+    <DueDate>0</DueDate>
+    <Deadline>0</Deadline>
+  </Job>
+  <Job>
+    <ID>1</ID>
+    <Size>4</Size>
+    <ProcessingTime>9</ProcessingTime>
+    <ReleaseTime>0</ReleaseTime>
+    <Weight>1</Weight>
+    <DueDate>0</DueDate>
+    <Deadline>0</Deadline>
+  </Job>
+  <Job>
+    <ID>2</ID>
+    <Size>5</Size>
+    <ProcessingTime>4</ProcessingTime>
+    <ReleaseTime>0</ReleaseTime>
+    <Weight>1</Weight>
+    <DueDate>0</DueDate>
+    <Deadline>0</Deadline>
+  </Job>
+  <Machine>
+    <ID>0</ID>
+    <Capacity>10</Capacity>
+  </Machine>
+</InputDataSet>

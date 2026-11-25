@@ -87,6 +87,22 @@ Exact: when the solver terminates, the bound equals the value of the solution an
 * Trindade et al. (2021) report much better results with (FLOW) on benchmark instances from the literature than with two other formulations, including the rank-based (MILP1+), and optimal solutions for instance sizes not solved before by exact methods.
 * Single machine and makespan only.
 
+## Results
+
+The instances of Chen et al. (2011) (`data/chen2011`, `--format chen2011`, see [`benchmarks.md`](benchmarks.md#chen2011)), $B = 10$, with HiGHS, a time limit of 60 s, 6 instances in parallel on 6 cores (the times are in whole seconds):
+
+| Jobs | Instances | Optimal within 60 s | Time (average) | Time (maximum) |
+| --- | --- | --- | --- | --- |
+| 10 | 600 | 600 | 0.0 s | 0 s |
+| 20 | 600 | 600 | 0.1 s | 7 s |
+| 50 | 600 | 600 | 1.5 s | 58 s |
+| 100 | 600 | 600 | 2.5 s | 44 s |
+| 200 | 600 | 596 | 5.7 s | 60 s |
+| 300 | 600 | 599 | 5.1 s | 60 s |
+| 500 | 600 | 600 | 4.2 s | 41 s |
+
+The 5 instances not solved within 60 s (4 with 200 jobs, 1 with 300 jobs, all with $p_j \in [1, 20]$ and sizes in $[1, 10]$ or $[2, 4]$) are solved to optimality in 40 to 65 s with a time limit of 600 s. All the certificates are feasible (independent check). The instances with sizes in $[4, 8]$ (`s3`) are solved in less than 2 s, and the instances with processing times in $[1, 20]$ and sizes in $[2, 4]$ (`p2s2`) are the hardest. The optimal values are stored in `data/data_single_makespan.csv`.
+
 ## Tests
 
 There is no test for this algorithm in `test/algorithms/` yet.
